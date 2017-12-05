@@ -1,6 +1,7 @@
 DROP TABLE offered_products_list;
 DROP TABLE offer;
 DROP TABLE message;
+DROP TABLE conversation;
 DROP TABLE product;
 DROP TABLE category;
 DROP TABLE users;
@@ -35,14 +36,23 @@ CREATE TABLE product (
   image_path   VARCHAR2(1000)
 );
 
+CREATE TABLE conversation (
+  id               NUMBER CONSTRAINT conversation_pk PRIMARY KEY,
+  init_sender      NUMBER CONSTRAINT conversation_init_sender_fk REFERENCES users (id),
+  init_receiver    NUMBER CONSTRAINT conversation_init_receiver_fk REFERENCES users (id),
+  product_id       NUMBER CONSTRAINT conversation_product_fk REFERENCES product (id),
+  sender_deleted   NUMBER(1, 0),
+  receiver_deleted NUMBER(1, 0)
+);
+
 CREATE TABLE message (
   id           NUMBER CONSTRAINT message_pk PRIMARY KEY,
   sender_id    NUMBER CONSTRAINT message_sender_fk REFERENCES users (id),
   receiver_id  NUMBER CONSTRAINT message_receiver_fk REFERENCES users (id),
-  product_id   NUMBER CONSTRAINT message_product_fk REFERENCES product (id),
   messge       VARCHAR2(1000),
   is_displayed NUMBER(1, 0),
-  send_date    DATE
+  send_date    DATE,
+  conversation NUMBER CONSTRAINT message_conversation_fk REFERENCES conversation (id)
 );
 
 CREATE TABLE offer (
@@ -63,6 +73,7 @@ CREATE TABLE offered_products_list (
 CREATE OR REPLACE PACKAGE utilities
 AS
   PROCEDURE finalize_exchange(offer_id offer.id%TYPE);
+  PROCEDURE remove_conversation(conv_id conversation.id%TYPE, user_id users.id%TYPE);
   FUNCTION get_hash_val(p_in VARCHAR2)
     RETURN VARCHAR2;
 END;
@@ -74,9 +85,37 @@ CREATE OR REPLACE PACKAGE BODY utilities AS
     BEGIN
       SELECT * INTO v_offer FROM offer WHERE id = offer_id;
       UPDATE product SET exchanged = 1 WHERE id = v_offer.product_id;
-      UPDATE product SET exchanged = 1 WHERE id IN (SELECT product_id FROM offered_products_list WHERE offer_id = v_offer.id);
+      UPDATE product SET exchanged = 1
+      WHERE id IN (
+        SELECT product_id FROM offered_products_list WHERE offer_id = v_offer.id
+      );
       UPDATE offer SET exchange_date = current_date WHERE id = v_offer.id;
       COMMIT;
+      EXCEPTION
+      WHEN NO_DATA_FOUND THEN
+      raise_application_error(-20001, 'Offer does not exists!');
+      WHEN TOO_MANY_ROWS THEN
+      raise_application_error(-20002, 'Duplicated offer data!');
+      WHEN OTHERS THEN
+      raise_application_error(-29999, 'Unexpected error!');
+    END;
+  PROCEDURE remove_conversation(conv_id conversation.id%TYPE, user_id users.id%TYPE)
+  AS
+    row_count_as_sender   INTEGER;
+    row_count_as_receiver INTEGER;
+    BEGIN
+      SELECT count(1) INTO row_count_as_sender FROM conversation WHERE id = conv_id AND init_sender = user_id;
+      SELECT count(1) INTO row_count_as_receiver FROM conversation WHERE id = conv_id AND init_receiver = user_id;
+
+      IF row_count_as_sender = row_count_as_receiver THEN
+        raise_application_error(-20003, 'Data is inconsistent. Sender and receiver are the same person');
+      ELSIF row_count_as_sender > 0 THEN
+          UPDATE conversation SET sender_deleted = 1 WHERE id = conv_id;
+      ELSIF row_count_as_receiver > 0 THEN
+          UPDATE conversation SET receiver_deleted = 1 WHERE id = conv_id;
+      ELSE
+        RAISE NO_DATA_FOUND;
+      END IF;
     END;
   FUNCTION get_hash_val(p_in VARCHAR2)
     RETURN VARCHAR2
@@ -117,24 +156,31 @@ INSERT INTO product VALUES (9, 3, 'stacjonarne 2', 'description examle 10', 4, 7
 INSERT INTO product VALUES (10, 2, 'motoryzacja 3', 'description examle 11', 7, 5, TO_DATE('2017/05/22', 'yyyy/mm/dd'), 1, 'random_string11/image.png');
 INSERT INTO product VALUES (11, 1, 'stacjonarne 3', 'description examle 12', 4, 2, TO_DATE('2017/05/22', 'yyyy/mm/dd'), 0, 'random_string12/image.png');
 
+INSERT INTO conversation VALUES (0, 0, 1, 0, 0, 0);
+INSERT INTO conversation VALUES (1, 3, 4, 1, 0, 0);
+INSERT INTO conversation VALUES (2, 4, 1, 2, 0, 0);
+INSERT INTO conversation VALUES (3, 1, 2, 3, 0, 0);
+INSERT INTO conversation VALUES (4, 3, 4, 4, 0, 0);
+INSERT INTO conversation VALUES (5, 2, 3, 5, 0, 0);
+INSERT INTO conversation VALUES (6, 1, 3, 5, 0, 0);
 
-INSERT INTO message VALUES (0, 0, 1, 0, 'message text 1', 1, TO_DATE('2017/11/01 10:20:20', 'yyyy/mm/dd HH24:MI:SS'));
-INSERT INTO message VALUES (1, 1, 0, 0, 'message text 2', 1, TO_DATE('2017/11/01 11:33:21', 'yyyy/mm/dd HH24:MI:SS'));
-INSERT INTO message VALUES (2, 0, 1, 0, 'message text 3', 0, TO_DATE('2017/11/03 14:14:14', 'yyyy/mm/dd HH24:MI:SS'));
+INSERT INTO message VALUES (0, 0, 1, 'message text 1', 1, TO_DATE('2017/11/01 10:20:20', 'yyyy/mm/dd HH24:MI:SS'), 0);
+INSERT INTO message VALUES (1, 1, 0, 'message text 2', 1, TO_DATE('2017/11/01 11:33:21', 'yyyy/mm/dd HH24:MI:SS'), 0);
+INSERT INTO message VALUES (2, 0, 1, 'message text 3', 0, TO_DATE('2017/11/03 14:14:14', 'yyyy/mm/dd HH24:MI:SS'), 0);
 
-INSERT INTO message VALUES (3, 3, 4, 1, 'message text 4', 1, TO_DATE('2017/10/17 18:59:43', 'yyyy/mm/dd HH24:MI:SS'));
-INSERT INTO message VALUES (4, 4, 3, 1, 'message text 5', 0, TO_DATE('2017/10/17 23:11:43', 'yyyy/mm/dd HH24:MI:SS'));
+INSERT INTO message VALUES (3, 3, 4, 'message text 4', 1, TO_DATE('2017/10/17 18:59:43', 'yyyy/mm/dd HH24:MI:SS'), 1);
+INSERT INTO message VALUES (4, 4, 3, 'message text 5', 0, TO_DATE('2017/10/17 23:11:43', 'yyyy/mm/dd HH24:MI:SS'), 1);
 
-INSERT INTO message VALUES (5, 4, 1, 2, 'message text 6', 0, TO_DATE('2017/10/15 10:11:59', 'yyyy/mm/dd HH24:MI:SS'));
+INSERT INTO message VALUES (5, 4, 1, 'message text 6', 0, TO_DATE('2017/10/15 10:11:59', 'yyyy/mm/dd HH24:MI:SS'), 2);
 
-INSERT INTO message VALUES (6, 1, 2, 3, 'message text 7', 1, TO_DATE('2017/09/29 23:59:59', 'yyyy/mm/dd HH24:MI:SS'));
-INSERT INTO message VALUES (7, 1, 2, 3, 'message text 8', 1, TO_DATE('2017/10/01 09:09:11', 'yyyy/mm/dd HH24:MI:SS'));
+INSERT INTO message VALUES (6, 1, 2, 'message text 7', 1, TO_DATE('2017/09/29 23:59:59', 'yyyy/mm/dd HH24:MI:SS'), 3);
+INSERT INTO message VALUES (7, 1, 2, 'message text 8', 1, TO_DATE('2017/10/01 09:09:11', 'yyyy/mm/dd HH24:MI:SS'), 3);
 
-INSERT INTO message VALUES (8, 3, 4, 4, 'message text 9', 0, TO_DATE('2017/08/15 16:14:41', 'yyyy/mm/dd HH24:MI:SS'));
-INSERT INTO message VALUES (9, 4, 3, 4, 'message text 10', 0, TO_DATE('2017/08/16 17:23:32', 'yyyy/mm/dd HH24:MI:SS'));
+INSERT INTO message VALUES (8, 3, 4, 'message text 9', 0, TO_DATE('2017/08/15 16:14:41', 'yyyy/mm/dd HH24:MI:SS'), 4);
+INSERT INTO message VALUES (9, 4, 3, 'message text 10', 0, TO_DATE('2017/08/16 17:23:32', 'yyyy/mm/dd HH24:MI:SS'), 4);
 
-INSERT INTO message VALUES (10, 2, 3, 5, 'message text 11', 1, TO_DATE('2017/07/18 05:07:33', 'yyyy/mm/dd HH24:MI:SS'));
-INSERT INTO message VALUES (11, 1, 3, 5, 'message text 12', 0, TO_DATE('2017/08/16 09:43:54', 'yyyy/mm/dd HH24:MI:SS'));
+INSERT INTO message VALUES (10, 2, 3, 'message text 11', 1, TO_DATE('2017/07/18 05:07:33', 'yyyy/mm/dd HH24:MI:SS'), 5);
+INSERT INTO message VALUES (11, 1, 3, 'message text 12', 0, TO_DATE('2017/08/16 09:43:54', 'yyyy/mm/dd HH24:MI:SS'), 6);
 
 INSERT INTO offer VALUES (0, TO_DATE('2017/11/03 15:33:14', 'yyyy/mm/dd HH24:MI:SS'), NULL, 0, 0, -1);
 INSERT INTO offer VALUES (1, TO_DATE('2017/10/18 08:19:11', 'yyyy/mm/dd HH24:MI:SS'), NULL, 3, 4, -1);
@@ -154,13 +200,11 @@ DECLARE
 BEGIN
   utilities.finalize_exchange(1);
 END;
--- informacje o wlasnie zaktualizowanej ofercie
-SELECT * FROM offer WHERE id = 1;
 
--- produkty jakie zostały zaoferonawe za produkt z id 4
-SELECT p2.title, p2.exchanged
-FROM product p, offer o, offered_products_list opl, product p2
-WHERE p.id = o.product_id AND o.id = opl.offer_id AND opl.product_id = p2.id AND p.id = 4;
-
--- pobranie wszystki wiadomości dotyczących produktu z id 0 w kolejności wysłania
-SELECT m.messge FROM message m, product p WHERE m.product_id = p.id AND p.id = 0 ORDER BY m.send_date;
+--kandydat na perspektywę
+select c.id, p.title, p.image_path, u.name || ' ' || u.last_name as Sender, u2.name || ' ' || u2.last_name as Receiver, m.messge, m.is_displayed
+from product p, conversation c, users u, users u2, message m
+where p.id = c.product_id and m.conversation = c.id and u.id = m.sender_id and u2.id = m.receiver_id
+and m.send_date = (
+  select max(send_date) from message m2 where m2.conversation = c.id
+);
