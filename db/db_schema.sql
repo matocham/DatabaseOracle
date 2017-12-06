@@ -294,9 +294,14 @@ BEGIN
   utilities.finalize_exchange(2);
 END;
 
-select c.id, p.title, p.image_path, u.name || ' ' || u.last_name as Sender, u2.name || ' ' || u2.last_name as Receiver, m.messge, m.is_displayed
+--propozycja perspektywy - podsumowanie konwersacji, które można wykorzystać przy wyświetlaniu aktualnych rozmów 
+create or replace view conversation_heading as
+select c.id, c.sender_deleted, c.receiver_deleted, p.title, p.image_path, u.id as Sender, u2.id as Receiver, m.messge, m.is_displayed
 from product p, conversation c, users u, users u2, message m
 where p.id = c.product_id and m.conversation = c.id and u.id = m.sender_id and u2.id = m.receiver_id
 and m.send_date = (
   select max(send_date) from message m2 where m2.conversation = c.id
 );
+
+--pobranie nieusuniętych rozmów, w których uczestniczy x
+select ch.* from conversation_heading ch where (Sender = 1 and sender_deleted = 0) or (Receiver = 1 and receiver_deleted = 0);
