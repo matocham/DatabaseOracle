@@ -6,6 +6,22 @@ DROP TABLE product;
 DROP TABLE category;
 DROP TABLE users;
 
+DROP PACKAGE utilities;
+
+DROP SEQUENCE users_seq;
+DROP SEQUENCE category_seq;
+DROP SEQUENCE product_seq;
+DROP SEQUENCE conversation_seq;
+DROP SEQUENCE message_seq;
+DROP SEQUENCE offer_seq;
+
+-- DROP TRIGGER users_auto_inc;
+-- DROP TRIGGER category_auto_inc;
+-- DROP TRIGGER product_auto_inc;
+-- DROP TRIGGER conversation_auto_inc;
+-- DROP TRIGGER message_auto_inc;
+-- DROP TRIGGER offer_auto_inc;
+
 CREATE TABLE users (
   id            NUMBER CONSTRAINT user_pk PRIMARY KEY,
   name          VARCHAR2(50),
@@ -15,7 +31,9 @@ CREATE TABLE users (
   email         VARCHAR2(100),
   city          VARCHAR2(60),
   premium_user  NUMBER(1, 0),
-  admin         NUMBER(1, 0)
+  admin         NUMBER(1, 0),
+  CONSTRAINT user_premium CHECK (premium_user BETWEEN 0 and 1),
+  CONSTRAINT user_admin CHECK (premium_user BETWEEN 0 and 1)
 );
 
 CREATE TABLE category (
@@ -29,11 +47,12 @@ CREATE TABLE product (
   owner_id     NUMBER CONSTRAINT product_onwer_fk REFERENCES users (id),
   title        VARCHAR2(100),
   description  VARCHAR2(1000),
-  categoryId   NUMBER CONSTRAINT product_category_fk REFERENCES category (id),
+  category_id   NUMBER CONSTRAINT product_category_fk REFERENCES category (id),
   exchange_for NUMBER CONSTRAINT product_exchange_for_fk REFERENCES category (id),
   add_date     DATE,
   exchanged    NUMBER(1, 0),
-  image_path   VARCHAR2(1000)
+  image_path   VARCHAR2(1000),
+  CONSTRAINT product_exchanged CHECK (exchanged BETWEEN 0 and 1)
 );
 
 CREATE TABLE conversation (
@@ -42,7 +61,9 @@ CREATE TABLE conversation (
   init_receiver    NUMBER CONSTRAINT conversation_init_receiver_fk REFERENCES users (id),
   product_id       NUMBER CONSTRAINT conversation_product_fk REFERENCES product (id),
   sender_deleted   NUMBER(1, 0),
-  receiver_deleted NUMBER(1, 0)
+  receiver_deleted NUMBER(1, 0),
+  CONSTRAINT conversation_sender_del CHECK (sender_deleted BETWEEN 0 and 1),
+  CONSTRAINT conversation_receiver_del CHECK (receiver_deleted BETWEEN 0 and 1)
 );
 
 CREATE TABLE message (
@@ -52,7 +73,8 @@ CREATE TABLE message (
   messge       VARCHAR2(1000),
   is_displayed NUMBER(1, 0),
   send_date    DATE,
-  conversation NUMBER CONSTRAINT message_conversation_fk REFERENCES conversation (id)
+  conversation NUMBER CONSTRAINT message_conversation_fk REFERENCES conversation (id),
+  CONSTRAINT message_displayed CHECK (is_displayed BETWEEN 0 and 1)
 );
 
 CREATE TABLE offer (
@@ -61,7 +83,8 @@ CREATE TABLE offer (
   exchange_date DATE,
   buyer_id      NUMBER CONSTRAINT offer_buyer_fk REFERENCES users (id),
   product_id    NUMBER CONSTRAINT offer_product_fk REFERENCES product (id),
-  rate          NUMBER(1, 0)
+  rate          NUMBER(1, 0),
+  CONSTRAINT offer_rate CHECK (rate BETWEEN -1 and 10)
 );
 
 CREATE TABLE offered_products_list (
@@ -70,6 +93,52 @@ CREATE TABLE offered_products_list (
   CONSTRAINT offered_pl_pk PRIMARY KEY (offer_id, product_id)
 );
 
+--stworzenie sekwencji
+CREATE SEQUENCE users_seq MINVALUE 1 NOMAXVALUE START WITH 1 INCREMENT BY 1 NOCACHE;
+CREATE SEQUENCE category_seq MINVALUE 1 NOMAXVALUE START WITH 1 INCREMENT BY 1 NOCACHE;
+CREATE SEQUENCE product_seq MINVALUE 1 NOMAXVALUE START WITH 1 INCREMENT BY 1 NOCACHE;
+CREATE SEQUENCE conversation_seq MINVALUE 1 NOMAXVALUE START WITH 1 INCREMENT BY 1 NOCACHE;
+CREATE SEQUENCE message_seq MINVALUE 1 NOMAXVALUE START WITH 1 INCREMENT BY 1 NOCACHE;
+CREATE SEQUENCE offer_seq MINVALUE 1 NOMAXVALUE START WITH 1 INCREMENT BY 1 NOCACHE;
+
+--stworzenie triggerów do autoincrement
+CREATE OR REPLACE TRIGGER users_auto_inc
+BEFORE INSERT ON users FOR EACH ROW
+  BEGIN
+    SELECT users_seq.nextval INTO :new.id from dual;
+  END;
+
+CREATE OR REPLACE TRIGGER category_auto_inc
+BEFORE INSERT ON category FOR EACH ROW
+  BEGIN
+    SELECT category_seq.nextval INTO :new.id from dual;
+  END;
+
+  CREATE OR REPLACE TRIGGER product_auto_inc
+BEFORE INSERT ON product FOR EACH ROW
+  BEGIN
+    SELECT product_seq.nextval INTO :new.id from dual;
+  END;
+
+  CREATE OR REPLACE TRIGGER conversation_auto_inc
+BEFORE INSERT ON conversation FOR EACH ROW
+  BEGIN
+    SELECT conversation_seq.nextval INTO :new.id from dual;
+  END;
+
+  CREATE OR REPLACE TRIGGER message_auto_inc
+BEFORE INSERT ON message FOR EACH ROW
+  BEGIN
+    SELECT message_seq.nextval INTO :new.id from dual;
+  END;
+
+  CREATE OR REPLACE TRIGGER offer_auto_inc
+BEFORE INSERT ON offer FOR EACH ROW
+  BEGIN
+    SELECT offer_seq.nextval INTO :new.id from dual;
+  END;
+
+--stworzenie procedur i funkcji
 CREATE OR REPLACE PACKAGE utilities
 AS
   PROCEDURE finalize_exchange(offer_id offer.id%TYPE);
@@ -128,80 +197,103 @@ CREATE OR REPLACE PACKAGE BODY utilities AS
 END;
 
 -- przykladowe dane
-INSERT INTO users VALUES (0, 'Adam', 'Nowak', 'a_nowak', utilities.get_hash_val('pass1'), 'anowak@examle.com', 'Białystok', 0, 0);
-INSERT INTO users VALUES (1, 'Tomasz', 'Kowalski', 't_kowalski', utilities.get_hash_val('pass2'), 'tkowalski@examle.com', 'Warszawa', 1, 0);
-INSERT INTO users VALUES (2, 'Sebastian', 'Wiśniewski', 's_wisniewski', utilities.get_hash_val('pass3'), 'swisniewski@examle.com', 'Gdańsk', 1, 0);
-INSERT INTO users VALUES (3, 'Bartosz', 'Brzozowski', 'b_brzozowski', utilities.get_hash_val('pass4'), 'bbrzozowski@examle.com', 'Białystok', 0, 1);
-INSERT INTO users VALUES (4, 'Konrad', 'Zalewski', 'k_zalewski', utilities.get_hash_val('pass5'), 'kzalewski@examle.com', 'Gdańsk', 0, 0);
+INSERT INTO users(name, last_name, login, user_password, email, city, premium_user, admin)
+  VALUES ('Adam', 'Nowak', 'a_nowak', utilities.get_hash_val('pass1'), 'anowak@examle.com', 'Białystok', 0, 0);
+INSERT INTO users(name, last_name, login, user_password, email, city, premium_user, admin)
+  VALUES ('Tomasz', 'Kowalski', 't_kowalski', utilities.get_hash_val('pass2'), 'tkowalski@examle.com', 'Warszawa', 1, 0);
+INSERT INTO users(name, last_name, login, user_password, email, city, premium_user, admin)
+  VALUES ('Sebastian', 'Wiśniewski', 's_wisniewski', utilities.get_hash_val('pass3'), 'swisniewski@examle.com', 'Gdańsk', 1, 0);
+INSERT INTO users(name, last_name, login, user_password, email, city, premium_user, admin)
+  VALUES ('Bartosz', 'Brzozowski', 'b_brzozowski', utilities.get_hash_val('pass4'), 'bbrzozowski@examle.com', 'Białystok', 0, 1);
+INSERT INTO users(name, last_name, login, user_password, email, city, premium_user, admin)
+  VALUES ('Konrad', 'Zalewski', 'k_zalewski', utilities.get_hash_val('pass5'), 'kzalewski@examle.com', 'Gdańsk', 0, 0);
 
-INSERT INTO category VALUES (0, 'root', NULL);
-INSERT INTO category VALUES (1, 'elektronika', 0);
-INSERT INTO category VALUES (2, 'dom i ogród', 0);
-INSERT INTO category VALUES (3, 'komputery', 1);
-INSERT INTO category VALUES (4, 'stacjonarne', 3);
-INSERT INTO category VALUES (5, 'laptopy', 3);
-INSERT INTO category VALUES (6, 'telefony', 1);
-INSERT INTO category VALUES (7, 'motoryzacja', 0);
+INSERT INTO category(name, parentCategory) VALUES ('root', NULL);
+INSERT INTO category(name, parentCategory) VALUES ('elektronika', 1);
+INSERT INTO category(name, parentCategory) VALUES ('dom i ogród', 1);
+INSERT INTO category(name, parentCategory) VALUES ('komputery', 2);
+INSERT INTO category(name, parentCategory) VALUES ('stacjonarne', 4);
+INSERT INTO category(name, parentCategory) VALUES ('laptopy', 4);
+INSERT INTO category(name, parentCategory) VALUES ('telefony', 2);
+INSERT INTO category(name, parentCategory) VALUES ('motoryzacja', 1);
 
-INSERT INTO product VALUES (0, 1, 'root', 'description examle 1', 0, 1, TO_DATE('2017/11/01', 'yyyy/mm/dd'), 0, 'random_string1/image.png');
-INSERT INTO product VALUES (1, 4, 'elekronika', 'description examle 2', 1, 2, TO_DATE('2017/10/15', 'yyyy/mm/dd'), 0, 'random_string2/image.png');
-INSERT INTO product VALUES (2, 1, 'elektronika 2', 'description examle 3', 1, 3, TO_DATE('2017/10/11', 'yyyy/mm/dd'), 0, 'random_string3/image.png');
-INSERT INTO product VALUES (3, 2, 'dom i ogród', 'description examle 4', 2, 4, TO_DATE('2017/09/20', 'yyyy/mm/dd'), 0, 'random_string4/image.png');
-INSERT INTO product VALUES (4, 4, 'motoryzacja', 'description examle 5', 7, 3, TO_DATE('2017/08/11', 'yyyy/mm/dd'), 0, 'random_string5/image.png');
-INSERT INTO product VALUES (5, 3, 'komputery stacjonarne', 'description examle 6', 4, 2, TO_DATE('2017/07/11', 'yyyy/mm/dd'), 0, 'random_string6/image.png');
-INSERT INTO product VALUES (6, 3, 'laptopy', 'description examle 7', 5, 7, TO_DATE('2017/06/01', 'yyyy/mm/dd'), 1, 'random_string7/image.png');
-INSERT INTO product VALUES (7, 0, 'telefony', 'description examle 8', 6, 1, TO_DATE('2017/10/24', 'yyyy/mm/dd'), 0, 'random_string8/image.png');
-INSERT INTO product VALUES (8, 0, 'motoryzacja 2', 'description examle 9', 7, 1, TO_DATE('2017/10/05', 'yyyy/mm/dd'), 0, 'random_string9/image.png');
-INSERT INTO product VALUES (9, 3, 'stacjonarne 2', 'description examle 10', 4, 7, TO_DATE('2017/07/22', 'yyyy/mm/dd'), 0, 'random_string10/image.png');
-INSERT INTO product VALUES (10, 2, 'motoryzacja 3', 'description examle 11', 7, 5, TO_DATE('2017/05/22', 'yyyy/mm/dd'), 1, 'random_string11/image.png');
-INSERT INTO product VALUES (11, 1, 'stacjonarne 3', 'description examle 12', 4, 2, TO_DATE('2017/05/22', 'yyyy/mm/dd'), 0, 'random_string12/image.png');
+INSERT INTO product(owner_id, title, description, category_id, exchange_for, add_date, exchanged, image_path)
+VALUES (2, 'root', 'description examle 1', 1, 2, TO_DATE('2017/11/01', 'yyyy/mm/dd'), 0, 'random_string1/image.png');
+INSERT INTO product(owner_id, title, description, category_id, exchange_for, add_date, exchanged, image_path)
+VALUES (5, 'elekronika', 'description examle 2', 2, 3, TO_DATE('2017/10/15', 'yyyy/mm/dd'), 0, 'random_string2/image.png');
+INSERT INTO product(owner_id, title, description, category_id, exchange_for, add_date, exchanged, image_path)
+VALUES (2, 'elektronika 2', 'description examle 3', 3, 4, TO_DATE('2017/10/11', 'yyyy/mm/dd'), 0, 'random_string3/image.png');
+INSERT INTO product(owner_id, title, description, category_id, exchange_for, add_date, exchanged, image_path)
+VALUES (3, 'dom i ogród', 'description examle 4', 3, 5, TO_DATE('2017/09/20', 'yyyy/mm/dd'), 0, 'random_string4/image.png');
+INSERT INTO product(owner_id, title, description, category_id, exchange_for, add_date, exchanged, image_path)
+VALUES (5, 'motoryzacja', 'description examle 5', 8, 4, TO_DATE('2017/08/11', 'yyyy/mm/dd'), 0, 'random_string5/image.png');
+INSERT INTO product(owner_id, title, description, category_id, exchange_for, add_date, exchanged, image_path)
+VALUES (4, 'komputery stacjonarne', 'description examle 6', 5, 3, TO_DATE('2017/07/11', 'yyyy/mm/dd'), 0, 'random_string6/image.png');
+INSERT INTO product(owner_id, title, description, category_id, exchange_for, add_date, exchanged, image_path)
+VALUES (4, 'laptopy', 'description examle 7', 6, 8, TO_DATE('2017/06/01', 'yyyy/mm/dd'), 1, 'random_string7/image.png');
+INSERT INTO product(owner_id, title, description, category_id, exchange_for, add_date, exchanged, image_path)
+VALUES (1, 'telefony', 'description examle 8', 7, 2, TO_DATE('2017/10/24', 'yyyy/mm/dd'), 0, 'random_string8/image.png');
+INSERT INTO product(owner_id, title, description, category_id, exchange_for, add_date, exchanged, image_path)
+VALUES (1, 'motoryzacja 2', 'description examle 9', 8, 2, TO_DATE('2017/10/05', 'yyyy/mm/dd'), 0, 'random_string9/image.png');
+INSERT INTO product(owner_id, title, description, category_id, exchange_for, add_date, exchanged, image_path)
+VALUES (4, 'stacjonarne 2', 'description examle 10', 5, 8, TO_DATE('2017/07/22', 'yyyy/mm/dd'), 0, 'random_string10/image.png');
+INSERT INTO product(owner_id, title, description, category_id, exchange_for, add_date, exchanged, image_path)
+VALUES (3, 'motoryzacja 3', 'description examle 11', 8, 6, TO_DATE('2017/05/22', 'yyyy/mm/dd'), 1, 'random_string11/image.png');
+INSERT INTO product(owner_id, title, description, category_id, exchange_for, add_date, exchanged, image_path)
+VALUES (2, 'stacjonarne 3', 'description examle 12', 5, 3, TO_DATE('2017/05/22', 'yyyy/mm/dd'), 0, 'random_string12/image.png');
 
-INSERT INTO conversation VALUES (0, 0, 1, 0, 0, 0);
-INSERT INTO conversation VALUES (1, 3, 4, 1, 0, 0);
-INSERT INTO conversation VALUES (2, 4, 1, 2, 0, 0);
-INSERT INTO conversation VALUES (3, 1, 2, 3, 0, 0);
-INSERT INTO conversation VALUES (4, 3, 4, 4, 0, 0);
-INSERT INTO conversation VALUES (5, 2, 3, 5, 0, 0);
-INSERT INTO conversation VALUES (6, 1, 3, 5, 0, 0);
+INSERT INTO conversation(init_sender, init_receiver, product_id, sender_deleted, receiver_deleted) VALUES (1, 2, 1, 0, 0);
+INSERT INTO conversation(init_sender, init_receiver, product_id, sender_deleted, receiver_deleted) VALUES (4, 5, 2, 0, 0);
+INSERT INTO conversation(init_sender, init_receiver, product_id, sender_deleted, receiver_deleted) VALUES (5, 2, 3, 0, 0);
+INSERT INTO conversation(init_sender, init_receiver, product_id, sender_deleted, receiver_deleted) VALUES (2, 3, 4, 0, 0);
+INSERT INTO conversation(init_sender, init_receiver, product_id, sender_deleted, receiver_deleted) VALUES (4, 5, 5, 0, 0);
+INSERT INTO conversation(init_sender, init_receiver, product_id, sender_deleted, receiver_deleted) VALUES (3, 4, 6, 0, 0);
+INSERT INTO conversation(init_sender, init_receiver, product_id, sender_deleted, receiver_deleted) VALUES (2, 4, 6, 0, 0);
 
-INSERT INTO message VALUES (0, 0, 1, 'message text 1', 1, TO_DATE('2017/11/01 10:20:20', 'yyyy/mm/dd HH24:MI:SS'), 0);
-INSERT INTO message VALUES (1, 1, 0, 'message text 2', 1, TO_DATE('2017/11/01 11:33:21', 'yyyy/mm/dd HH24:MI:SS'), 0);
-INSERT INTO message VALUES (2, 0, 1, 'message text 3', 0, TO_DATE('2017/11/03 14:14:14', 'yyyy/mm/dd HH24:MI:SS'), 0);
+INSERT INTO message(sender_id, receiver_id, messge, is_displayed, send_date, conversation)
+  VALUES (1, 2, 'message text 1', 1, TO_DATE('2017/11/01 10:20:20', 'yyyy/mm/dd HH24:MI:SS'), 1);
+INSERT INTO message(sender_id, receiver_id, messge, is_displayed, send_date, conversation)
+  VALUES (2, 1, 'message text 2', 1, TO_DATE('2017/11/01 11:33:21', 'yyyy/mm/dd HH24:MI:SS'), 1);
+INSERT INTO message(sender_id, receiver_id, messge, is_displayed, send_date, conversation)
+  VALUES (1, 2, 'message text 3', 0, TO_DATE('2017/11/03 14:14:14', 'yyyy/mm/dd HH24:MI:SS'), 1);
+INSERT INTO message(sender_id, receiver_id, messge, is_displayed, send_date, conversation)
+  VALUES (3, 5, 'message text 4', 1, TO_DATE('2017/10/17 18:59:43', 'yyyy/mm/dd HH24:MI:SS'), 2);
+INSERT INTO message(sender_id, receiver_id, messge, is_displayed, send_date, conversation)
+  VALUES (4, 4, 'message text 5', 0, TO_DATE('2017/10/17 23:11:43', 'yyyy/mm/dd HH24:MI:SS'), 2);
+INSERT INTO message(sender_id, receiver_id, messge, is_displayed, send_date, conversation)
+  VALUES (4, 2, 'message text 6', 0, TO_DATE('2017/10/15 10:11:59', 'yyyy/mm/dd HH24:MI:SS'), 3);
+INSERT INTO message(sender_id, receiver_id, messge, is_displayed, send_date, conversation)
+  VALUES (2, 3, 'message text 7', 1, TO_DATE('2017/09/29 23:59:59', 'yyyy/mm/dd HH24:MI:SS'), 4);
+INSERT INTO message(sender_id, receiver_id, messge, is_displayed, send_date, conversation)
+  VALUES (2, 3, 'message text 8', 1, TO_DATE('2017/10/01 09:09:11', 'yyyy/mm/dd HH24:MI:SS'), 4);
+INSERT INTO message(sender_id, receiver_id, messge, is_displayed, send_date, conversation)
+  VALUES (4, 5, 'message text 9', 0, TO_DATE('2017/08/15 16:14:41', 'yyyy/mm/dd HH24:MI:SS'), 5);
+INSERT INTO message(sender_id, receiver_id, messge, is_displayed, send_date, conversation)
+  VALUES (5, 4, 'message text 10', 0, TO_DATE('2017/08/16 17:23:32', 'yyyy/mm/dd HH24:MI:SS'), 5);
+INSERT INTO message(sender_id, receiver_id, messge, is_displayed, send_date, conversation)
+  VALUES (3, 4, 'message text 11', 1, TO_DATE('2017/07/18 05:07:33', 'yyyy/mm/dd HH24:MI:SS'), 6);
+INSERT INTO message(sender_id, receiver_id, messge, is_displayed, send_date, conversation)
+  VALUES (2, 4, 'message text 12', 0, TO_DATE('2017/08/16 09:43:54', 'yyyy/mm/dd HH24:MI:SS'), 7);
 
-INSERT INTO message VALUES (3, 3, 4, 'message text 4', 1, TO_DATE('2017/10/17 18:59:43', 'yyyy/mm/dd HH24:MI:SS'), 1);
-INSERT INTO message VALUES (4, 4, 3, 'message text 5', 0, TO_DATE('2017/10/17 23:11:43', 'yyyy/mm/dd HH24:MI:SS'), 1);
+INSERT INTO offer(offered_date, exchange_date, buyer_id, product_id, rate) VALUES (TO_DATE('2017/11/03 15:33:14', 'yyyy/mm/dd HH24:MI:SS'), NULL, 1, 1, -1);
+INSERT INTO offer(offered_date, exchange_date, buyer_id, product_id, rate) VALUES (TO_DATE('2017/10/18 08:19:11', 'yyyy/mm/dd HH24:MI:SS'), NULL, 4, 5, -1);
+INSERT INTO offer(offered_date, exchange_date, buyer_id, product_id, rate) VALUES (TO_DATE('2017/06/11 11:45:32', 'yyyy/mm/dd HH24:MI:SS'), TO_DATE('2017/06/22 13:42:12', 'yyyy/mm/dd HH24:MI:SS'), 3, 7, 7);
+INSERT INTO offer(offered_date, exchange_date, buyer_id, product_id, rate) VALUES (TO_DATE('2017/09/20 20:43:01', 'yyyy/mm/dd HH24:MI:SS'), NULL, 2, 4, -1);
 
-INSERT INTO message VALUES (5, 4, 1, 'message text 6', 0, TO_DATE('2017/10/15 10:11:59', 'yyyy/mm/dd HH24:MI:SS'), 2);
-
-INSERT INTO message VALUES (6, 1, 2, 'message text 7', 1, TO_DATE('2017/09/29 23:59:59', 'yyyy/mm/dd HH24:MI:SS'), 3);
-INSERT INTO message VALUES (7, 1, 2, 'message text 8', 1, TO_DATE('2017/10/01 09:09:11', 'yyyy/mm/dd HH24:MI:SS'), 3);
-
-INSERT INTO message VALUES (8, 3, 4, 'message text 9', 0, TO_DATE('2017/08/15 16:14:41', 'yyyy/mm/dd HH24:MI:SS'), 4);
-INSERT INTO message VALUES (9, 4, 3, 'message text 10', 0, TO_DATE('2017/08/16 17:23:32', 'yyyy/mm/dd HH24:MI:SS'), 4);
-
-INSERT INTO message VALUES (10, 2, 3, 'message text 11', 1, TO_DATE('2017/07/18 05:07:33', 'yyyy/mm/dd HH24:MI:SS'), 5);
-INSERT INTO message VALUES (11, 1, 3, 'message text 12', 0, TO_DATE('2017/08/16 09:43:54', 'yyyy/mm/dd HH24:MI:SS'), 6);
-
-INSERT INTO offer VALUES (0, TO_DATE('2017/11/03 15:33:14', 'yyyy/mm/dd HH24:MI:SS'), NULL, 0, 0, -1);
-INSERT INTO offer VALUES (1, TO_DATE('2017/10/18 08:19:11', 'yyyy/mm/dd HH24:MI:SS'), NULL, 3, 4, -1);
-INSERT INTO offer VALUES (2, TO_DATE('2017/06/11 11:45:32', 'yyyy/mm/dd HH24:MI:SS'), TO_DATE('2017/06/22 13:42:12', 'yyyy/mm/dd HH24:MI:SS'), 2, 6, 7);
-INSERT INTO offer VALUES (3, TO_DATE('2017/09/20 20:43:01', 'yyyy/mm/dd HH24:MI:SS'), NULL, 1, 3, -1);
-
-INSERT INTO offered_products_list VALUES (0, 7);
-INSERT INTO offered_products_list VALUES (0, 8);
+INSERT INTO offered_products_list VALUES (1, 8);
 INSERT INTO offered_products_list VALUES (1, 9);
 INSERT INTO offered_products_list VALUES (2, 10);
 INSERT INTO offered_products_list VALUES (3, 11);
+INSERT INTO offered_products_list VALUES (4, 12);
 
 COMMIT;
 
 -- oznacz ofertę jako zakończoną
 DECLARE
 BEGIN
-  utilities.finalize_exchange(1);
+  utilities.finalize_exchange(2);
 END;
 
---kandydat na perspektywę
 select c.id, p.title, p.image_path, u.name || ' ' || u.last_name as Sender, u2.name || ' ' || u2.last_name as Receiver, m.messge, m.is_displayed
 from product p, conversation c, users u, users u2, message m
 where p.id = c.product_id and m.conversation = c.id and u.id = m.sender_id and u2.id = m.receiver_id
