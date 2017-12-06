@@ -303,5 +303,5 @@ and m.send_date = (
   select max(send_date) from message m2 where m2.conversation = c.id
 );
 
---pobranie nieusuniętych rozmów, w których uczestniczy x
+--pobranie nieusuniętych rozmów, w których uczestniczy x ( 2 triggery na insert i delete)
 select ch.* from conversation_heading ch where (Sender = 1 and sender_deleted = 0) or (Receiver = 1 and receiver_deleted = 0);
