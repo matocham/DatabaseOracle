@@ -30,8 +30,8 @@ CREATE TABLE users (
   user_password VARCHAR2(50),
   email         VARCHAR2(100),
   city          VARCHAR2(60),
-  premium_user  NUMBER(1, 0),
-  admin         NUMBER(1, 0),
+  premium_user  NUMBER(1, 0) DEFAULT 0,
+  admin         NUMBER(1, 0) DEFAULT 0,
   CONSTRAINT user_premium CHECK (premium_user BETWEEN 0 and 1),
   CONSTRAINT user_admin CHECK (premium_user BETWEEN 0 and 1)
 );
@@ -49,8 +49,8 @@ CREATE TABLE product (
   description  VARCHAR2(1000),
   category_id   NUMBER CONSTRAINT product_category_fk REFERENCES category (id),
   exchange_for NUMBER CONSTRAINT product_exchange_for_fk REFERENCES category (id),
-  add_date     DATE,
-  exchanged    NUMBER(1, 0),
+  add_date     DATE CONSTRAINT product_date NOT NULL,
+  exchanged    NUMBER(1, 0) DEFAULT 0,
   image_path   VARCHAR2(1000),
   CONSTRAINT product_exchanged CHECK (exchanged BETWEEN 0 and 1)
 );
@@ -60,8 +60,8 @@ CREATE TABLE conversation (
   init_sender      NUMBER CONSTRAINT conversation_init_sender_fk REFERENCES users (id),
   init_receiver    NUMBER CONSTRAINT conversation_init_receiver_fk REFERENCES users (id),
   product_id       NUMBER CONSTRAINT conversation_product_fk REFERENCES product (id),
-  sender_deleted   NUMBER(1, 0),
-  receiver_deleted NUMBER(1, 0),
+  sender_deleted   NUMBER(1, 0) DEFAULT 0,
+  receiver_deleted NUMBER(1, 0) DEFAULT 0,
   CONSTRAINT conversation_sender_del CHECK (sender_deleted BETWEEN 0 and 1),
   CONSTRAINT conversation_receiver_del CHECK (receiver_deleted BETWEEN 0 and 1)
 );
@@ -70,20 +70,20 @@ CREATE TABLE message (
   id           NUMBER CONSTRAINT message_pk PRIMARY KEY,
   sender_id    NUMBER CONSTRAINT message_sender_fk REFERENCES users (id),
   receiver_id  NUMBER CONSTRAINT message_receiver_fk REFERENCES users (id),
-  messge       VARCHAR2(1000),
-  is_displayed NUMBER(1, 0),
-  send_date    DATE,
+  msg_body     VARCHAR2(1000),
+  is_displayed NUMBER(1, 0) DEFAULT 0,
+  send_date    DATE CONSTRAINT message_date NOT NULL,
   conversation NUMBER CONSTRAINT message_conversation_fk REFERENCES conversation (id),
   CONSTRAINT message_displayed CHECK (is_displayed BETWEEN 0 and 1)
 );
 
 CREATE TABLE offer (
   id            NUMBER CONSTRAINT offer_pk PRIMARY KEY,
-  offered_date  DATE,
+  offered_date  DATE CONSTRAINT offer_date NOT NULL,
   exchange_date DATE,
   buyer_id      NUMBER CONSTRAINT offer_buyer_fk REFERENCES users (id),
   product_id    NUMBER CONSTRAINT offer_product_fk REFERENCES product (id),
-  rate          NUMBER(1, 0),
+  rate          NUMBER(2, 0) DEFAULT -1,
   CONSTRAINT offer_rate CHECK (rate BETWEEN -1 and 10)
 );
 
@@ -102,40 +102,43 @@ CREATE SEQUENCE message_seq MINVALUE 1 NOMAXVALUE START WITH 1 INCREMENT BY 1 NO
 CREATE SEQUENCE offer_seq MINVALUE 1 NOMAXVALUE START WITH 1 INCREMENT BY 1 NOCACHE;
 
 --stworzenie triggerów do autoincrement
-CREATE OR REPLACE TRIGGER users_auto_inc
+CREATE OR REPLACE TRIGGER users_insert_trigger
 BEFORE INSERT ON users FOR EACH ROW
   BEGIN
     SELECT users_seq.nextval INTO :new.id from dual;
   END;
 
-CREATE OR REPLACE TRIGGER category_auto_inc
+CREATE OR REPLACE TRIGGER category_insert_trigger
 BEFORE INSERT ON category FOR EACH ROW
   BEGIN
     SELECT category_seq.nextval INTO :new.id from dual;
   END;
 
-  CREATE OR REPLACE TRIGGER product_auto_inc
+CREATE OR REPLACE TRIGGER product_insert_trigger
 BEFORE INSERT ON product FOR EACH ROW
   BEGIN
     SELECT product_seq.nextval INTO :new.id from dual;
+    --:new.add_date := current_date;
   END;
 
-  CREATE OR REPLACE TRIGGER conversation_auto_inc
+CREATE OR REPLACE TRIGGER conversation_insert_trigger
 BEFORE INSERT ON conversation FOR EACH ROW
   BEGIN
     SELECT conversation_seq.nextval INTO :new.id from dual;
   END;
 
-  CREATE OR REPLACE TRIGGER message_auto_inc
+CREATE OR REPLACE TRIGGER message_insert_trigger
 BEFORE INSERT ON message FOR EACH ROW
   BEGIN
     SELECT message_seq.nextval INTO :new.id from dual;
+    --:new.send_date := current_date;
   END;
 
-  CREATE OR REPLACE TRIGGER offer_auto_inc
+CREATE OR REPLACE TRIGGER offer_insert_trigger
 BEFORE INSERT ON offer FOR EACH ROW
   BEGIN
     SELECT offer_seq.nextval INTO :new.id from dual;
+    --:new.offered_date := current_date;
   END;
 
 --stworzenie procedur i funkcji
@@ -250,29 +253,29 @@ INSERT INTO conversation(init_sender, init_receiver, product_id, sender_deleted,
 INSERT INTO conversation(init_sender, init_receiver, product_id, sender_deleted, receiver_deleted) VALUES (3, 4, 6, 0, 0);
 INSERT INTO conversation(init_sender, init_receiver, product_id, sender_deleted, receiver_deleted) VALUES (2, 4, 6, 0, 0);
 
-INSERT INTO message(sender_id, receiver_id, messge, is_displayed, send_date, conversation)
+INSERT INTO message(sender_id, receiver_id, msg_body, is_displayed, send_date, conversation)
   VALUES (1, 2, 'message text 1', 1, TO_DATE('2017/11/01 10:20:20', 'yyyy/mm/dd HH24:MI:SS'), 1);
-INSERT INTO message(sender_id, receiver_id, messge, is_displayed, send_date, conversation)
+INSERT INTO message(sender_id, receiver_id, msg_body, is_displayed, send_date, conversation)
   VALUES (2, 1, 'message text 2', 1, TO_DATE('2017/11/01 11:33:21', 'yyyy/mm/dd HH24:MI:SS'), 1);
-INSERT INTO message(sender_id, receiver_id, messge, is_displayed, send_date, conversation)
+INSERT INTO message(sender_id, receiver_id, msg_body, is_displayed, send_date, conversation)
   VALUES (1, 2, 'message text 3', 0, TO_DATE('2017/11/03 14:14:14', 'yyyy/mm/dd HH24:MI:SS'), 1);
-INSERT INTO message(sender_id, receiver_id, messge, is_displayed, send_date, conversation)
+INSERT INTO message(sender_id, receiver_id, msg_body, is_displayed, send_date, conversation)
   VALUES (3, 5, 'message text 4', 1, TO_DATE('2017/10/17 18:59:43', 'yyyy/mm/dd HH24:MI:SS'), 2);
-INSERT INTO message(sender_id, receiver_id, messge, is_displayed, send_date, conversation)
+INSERT INTO message(sender_id, receiver_id, msg_body, is_displayed, send_date, conversation)
   VALUES (4, 4, 'message text 5', 0, TO_DATE('2017/10/17 23:11:43', 'yyyy/mm/dd HH24:MI:SS'), 2);
-INSERT INTO message(sender_id, receiver_id, messge, is_displayed, send_date, conversation)
+INSERT INTO message(sender_id, receiver_id, msg_body, is_displayed, send_date, conversation)
   VALUES (4, 2, 'message text 6', 0, TO_DATE('2017/10/15 10:11:59', 'yyyy/mm/dd HH24:MI:SS'), 3);
-INSERT INTO message(sender_id, receiver_id, messge, is_displayed, send_date, conversation)
+INSERT INTO message(sender_id, receiver_id, msg_body, is_displayed, send_date, conversation)
   VALUES (2, 3, 'message text 7', 1, TO_DATE('2017/09/29 23:59:59', 'yyyy/mm/dd HH24:MI:SS'), 4);
-INSERT INTO message(sender_id, receiver_id, messge, is_displayed, send_date, conversation)
+INSERT INTO message(sender_id, receiver_id, msg_body, is_displayed, send_date, conversation)
   VALUES (2, 3, 'message text 8', 1, TO_DATE('2017/10/01 09:09:11', 'yyyy/mm/dd HH24:MI:SS'), 4);
-INSERT INTO message(sender_id, receiver_id, messge, is_displayed, send_date, conversation)
+INSERT INTO message(sender_id, receiver_id, msg_body, is_displayed, send_date, conversation)
   VALUES (4, 5, 'message text 9', 0, TO_DATE('2017/08/15 16:14:41', 'yyyy/mm/dd HH24:MI:SS'), 5);
-INSERT INTO message(sender_id, receiver_id, messge, is_displayed, send_date, conversation)
+INSERT INTO message(sender_id, receiver_id, msg_body, is_displayed, send_date, conversation)
   VALUES (5, 4, 'message text 10', 0, TO_DATE('2017/08/16 17:23:32', 'yyyy/mm/dd HH24:MI:SS'), 5);
-INSERT INTO message(sender_id, receiver_id, messge, is_displayed, send_date, conversation)
+INSERT INTO message(sender_id, receiver_id, msg_body, is_displayed, send_date, conversation)
   VALUES (3, 4, 'message text 11', 1, TO_DATE('2017/07/18 05:07:33', 'yyyy/mm/dd HH24:MI:SS'), 6);
-INSERT INTO message(sender_id, receiver_id, messge, is_displayed, send_date, conversation)
+INSERT INTO message(sender_id, receiver_id, msg_body, is_displayed, send_date, conversation)
   VALUES (2, 4, 'message text 12', 0, TO_DATE('2017/08/16 09:43:54', 'yyyy/mm/dd HH24:MI:SS'), 7);
 
 INSERT INTO offer(offered_date, exchange_date, buyer_id, product_id, rate) VALUES (TO_DATE('2017/11/03 15:33:14', 'yyyy/mm/dd HH24:MI:SS'), NULL, 1, 1, -1);
@@ -294,14 +297,75 @@ BEGIN
   utilities.finalize_exchange(2);
 END;
 
---propozycja perspektywy - podsumowanie konwersacji, które można wykorzystać przy wyświetlaniu aktualnych rozmów 
+-- po zaladowaniu danych testowych dodaj triggery z automatycznym ustawianiem dat
+CREATE OR REPLACE TRIGGER product_insert_trigger
+BEFORE INSERT ON product FOR EACH ROW
+  BEGIN
+    SELECT product_seq.nextval INTO :new.id from dual;
+    :new.add_date := current_date;
+  END;
+
+CREATE OR REPLACE TRIGGER message_insert_trigger
+BEFORE INSERT ON message FOR EACH ROW
+  BEGIN
+    SELECT message_seq.nextval INTO :new.id from dual;
+    :new.send_date := current_date;
+  END;
+
+CREATE OR REPLACE TRIGGER offer_insert_trigger
+BEFORE INSERT ON offer FOR EACH ROW
+  BEGIN
+    SELECT offer_seq.nextval INTO :new.id from dual;
+    :new.offered_date := current_date;
+  END;
+
+--propozycja perspektywy - podsumowanie konwersacji, które można wykorzystać przy wyświetlaniu aktualnych rozmów
 create or replace view conversation_heading as
-select c.id, c.sender_deleted, c.receiver_deleted, p.title, p.image_path, u.id as Sender, u2.id as Receiver, m.messge, m.is_displayed
+select c.id, p.title, p.image_path, p.id as product_id, u.id as sender, u2.id as receiver, m.msg_body, m.send_date, c.sender_deleted, c.receiver_deleted, m.is_displayed
 from product p, conversation c, users u, users u2, message m
 where p.id = c.product_id and m.conversation = c.id and u.id = m.sender_id and u2.id = m.receiver_id
 and m.send_date = (
   select max(send_date) from message m2 where m2.conversation = c.id
 );
 
---pobranie nieusuniętych rozmów, w których uczestniczy x ( 2 triggery na insert i delete)
-select ch.* from conversation_heading ch where (Sender = 1 and sender_deleted = 0) or (Receiver = 1 and receiver_deleted = 0);
+select * from conversation_heading order by id;
+
+-- update
+create or replace TRIGGER conv_h_update_trigger INSTEAD OF UPDATE on conversation_heading
+  BEGIN
+    insert into message(sender_id, receiver_id, msg_body, conversation) VALUES (:new.sender, :new.receiver, :new.msg_body, :old.id);
+  END;
+update conversation_heading set sender = 2, receiver = 1, msg_body = 'new message' where id = 1;
+
+-- insert
+create or replace TRIGGER con_h_insert_trigger INSTEAD OF INSERT on conversation_heading
+  DECLARE
+    next_conv_id conversation.id%TYPE;
+  BEGIN
+      insert into conversation(init_sender, init_receiver, product_id) VALUES (:new.sender, :new.receiver, :new.product_id) RETURNING id into next_conv_id;
+      insert into message(sender_id, receiver_id, msg_body, conversation) VALUES (:new.sender, :new.receiver, :new.msg_body, next_conv_id);
+  END;
+insert into conversation_heading(sender, receiver, msg_body, product_id) values (1,2, 'new message test 1', 1);
+
+-- testowanie usuwania
+DECLARE
+  BEGIN
+  utilities.remove_conversation(8,1);
+END;
+
+--pobranie nieusuniętych rozmów, w których uczestniczy x
+select ch.* from conversation_heading ch where (sender = 1 and sender_deleted = 0) or (receiver = 1 and receiver_deleted = 0);
+
+-- jak wykonanie zakończyło się z ostrzeżeniem to tutaj jest błąd
+select line, position, text
+from user_errors
+order by sequence;
+
+select 'drop trigger ' || trigger_name || ';' stmt from user_triggers;
+drop trigger MESSAGE_INSERT_TRIGGER;
+drop trigger CON_H_INSERT_TRIGGER;
+drop trigger CONVERSATION_INSERT_TRIGGER;
+drop trigger OFFER_INSERT_TRIGGER;
+drop trigger PRODUCT_INSERT_TRIGGER;
+drop trigger USERS_INSERT_TRIGGER;
+drop trigger CATEGORY_INSERT_TRIGGER;
