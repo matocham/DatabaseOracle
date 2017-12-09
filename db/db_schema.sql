@@ -148,6 +148,8 @@ AS
   PROCEDURE remove_conversation(conv_id conversation.id%TYPE, user_id users.id%TYPE);
   FUNCTION get_hash_val(p_in VARCHAR2)
     RETURN VARCHAR2;
+  FUNCTION is_suitable_for_exchange(exchanged_product product.id%TYPE, offered_product product.id%TYPE)
+    RETURN INTEGER;
 END;
 
 CREATE OR REPLACE PACKAGE BODY utilities AS
@@ -197,6 +199,27 @@ CREATE OR REPLACE PACKAGE BODY utilities AS
       l_hash := RAWTOHEX(UTL_RAW.cast_to_raw(DBMS_OBFUSCATION_TOOLKIT.md5(input_string => p_in)));
       RETURN l_hash;
     END;
+
+  FUNCTION is_suitable_for_exchange(exchanged_product product.id%TYPE, offered_product product.id%TYPE)
+    RETURN INTEGER
+  IS
+    exchange_for_c product.exchange_for%TYPE;
+    offered_category category.id%TYPE;
+    cursor categories(root_cat category.id%TYPE) IS select id, name from category START WITH id = root_cat CONNECT BY PRIOR id = parentCategory;
+  BEGIN
+    select exchange_for into exchange_for_c from product where product.id = exchanged_product;
+    select category_id into offered_category from product where product.id = offered_product;
+    for cat in categories(exchange_for_c)
+    LOOP
+      IF cat.id = offered_category THEN
+        RETURN 1;
+      END IF;
+    END LOOP;
+    RETURN 0;
+    EXCEPTION
+    WHEN NO_DATA_FOUND then return 0;
+    when OTHERS THEN raise_application_error(-20005, 'Processing error: ' || sqlerrm);
+  END;
 END;
 
 -- przykladowe dane
@@ -345,7 +368,7 @@ create or replace TRIGGER con_h_insert_trigger INSTEAD OF INSERT on conversation
       insert into conversation(init_sender, init_receiver, product_id) VALUES (:new.sender, :new.receiver, :new.product_id) RETURNING id into next_conv_id;
       insert into message(sender_id, receiver_id, msg_body, conversation) VALUES (:new.sender, :new.receiver, :new.msg_body, next_conv_id);
   END;
-insert into conversation_heading(sender, receiver, msg_body, product_id) values (1,2, 'new message test 1', 1);
+insert into conversation_heading(sender, receiver, msg_body, product_id) values (1,3, 'new message test 1', 2);
 
 -- testowanie usuwania
 DECLARE
@@ -355,6 +378,7 @@ END;
 
 --pobranie nieusuniętych rozmów, w których uczestniczy x
 select ch.* from conversation_heading ch where (sender = 1 and sender_deleted = 0) or (receiver = 1 and receiver_deleted = 0);
+select id from conversation_heading where (sender = 1 or receiver =1) and (sender =2 or receiver =2) and product_id = 1;
 
 -- jak wykonanie zakończyło się z ostrzeżeniem to tutaj jest błąd
 select line, position, text
@@ -369,3 +393,6 @@ drop trigger OFFER_INSERT_TRIGGER;
 drop trigger PRODUCT_INSERT_TRIGGER;
 drop trigger USERS_INSERT_TRIGGER;
 drop trigger CATEGORY_INSERT_TRIGGER;
+
+
+select * from product where id=3 and utilities.is_suitable_for_exchange(id,10) = 1;
