@@ -1,6 +1,7 @@
 package pl.edu.pb.wi.project.database.models;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @NamedStoredProcedureQueries({
@@ -10,9 +11,9 @@ import javax.persistence.*;
                         @StoredProcedureParameter(mode = ParameterMode.IN, name = "offer_id", type = Long.class)
                 })
 })
-public class Users {
+public class User implements Serializable{
     @Id
-    @Column(name = "ID")
+    @JoinColumn(name = "ID")
     Long id;
 
     @Column(name = "NAME")
@@ -24,6 +25,9 @@ public class Users {
     @Column(name = "LOGIN")
     String login;
 
+    @Column(name = "USER_PASSWORD")
+    String userPassword;
+
     @Column(name = "EMAIL")
     String email;
 
@@ -31,10 +35,10 @@ public class Users {
     String city;
 
     @Column(name = "PREMIUM_USER")
-    boolean premiumUser;
+    Boolean premiumUser;
 
     @Column(name = "ADMIN")
-    boolean admin;
+    Boolean admin;
 
     public Long getId() {
         return id;

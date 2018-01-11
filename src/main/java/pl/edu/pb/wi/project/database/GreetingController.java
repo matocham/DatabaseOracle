@@ -22,7 +22,6 @@ public class GreetingController {
     public String greeting(@RequestParam(value="name", required=false, defaultValue="World") String name, Model model) {
         model.addAttribute("name", name);
         System.out.println("DATASOURCE = " + dataSource);
-
         model.addAttribute("allUsers", userRepository.findAll());
         model.addAttribute("foundUser", userRepository.findByEmail("bbrzozowski@examle.com"));
         userRepository.finalizeExchange(2L);
