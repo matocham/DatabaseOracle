@@ -31,4 +31,60 @@ public class Message implements Serializable {
     @JoinColumn (name = "CONVERSTATION",referencedColumnName = "ID")
     @ManyToOne(fetch = FetchType.EAGER)
     Conversation conversation;
+
+    public Long getId() {
+        return Id;
+    }
+
+    public void setId(Long id) {
+        Id = id;
+    }
+
+    public User getSenderId() {
+        return senderId;
+    }
+
+    public void setSenderId(User senderId) {
+        this.senderId = senderId;
+    }
+
+    public User getReceiverId() {
+        return receiverId;
+    }
+
+    public void setReceiverId(User receiverId) {
+        this.receiverId = receiverId;
+    }
+
+    public String getMsgBody() {
+        return msgBody;
+    }
+
+    public void setMsgBody(String msgBody) {
+        this.msgBody = msgBody;
+    }
+
+    public Boolean getDisplayed() {
+        return isDisplayed;
+    }
+
+    public void setDisplayed(Boolean displayed) {
+        isDisplayed = displayed;
+    }
+
+    public Date getSendDate() {
+        return sendDate;
+    }
+
+    public void setSendDate(Date sendDate) {
+        this.sendDate = sendDate;
+    }
+
+    public Conversation getConversation() {
+        return conversation;
+    }
+
+    public void setConversation(Conversation conversation) {
+        this.conversation = conversation;
+    }
 }

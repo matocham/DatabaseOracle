@@ -15,4 +15,20 @@ public class OfferdProductsList implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, targetEntity = Product.class)
     @JoinColumn(name = "PRODUCTID")
     Set<Product> productId;
+
+    public Offer getOfferId() {
+        return offerId;
+    }
+
+    public void setOfferId(Offer offerId) {
+        this.offerId = offerId;
+    }
+
+    public Set<Product> getProductId() {
+        return productId;
+    }
+
+    public void setProductId(Set<Product> productId) {
+        this.productId = productId;
+    }
 }

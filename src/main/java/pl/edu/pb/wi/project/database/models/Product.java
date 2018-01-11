@@ -11,6 +11,70 @@ public class Product implements Serializable {
     @Id
     Long Id;
 
+    public Long getId() {
+        return Id;
+    }
+
+    public void setId(Long id) {
+        Id = id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Set<Category> getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(Set<Category> categoryId) {
+        this.categoryId = categoryId;
+    }
+
+    public Set<Category> getExchangeFor() {
+        return exchangeFor;
+    }
+
+    public void setExchangeFor(Set<Category> exchangeFor) {
+        this.exchangeFor = exchangeFor;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
+    public Boolean getBought() {
+        return isBought;
+    }
+
+    public void setBought(Boolean bought) {
+        isBought = bought;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
     @Column(name = "TITLE")
     String title;
 

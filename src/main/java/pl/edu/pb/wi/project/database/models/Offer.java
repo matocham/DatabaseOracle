@@ -25,6 +25,54 @@ public class Offer implements Serializable {
     @JoinColumn(name="PRODUCT_ID")
     Set<Product> productId;
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Date getOoferedDate() {
+        return ooferedDate;
+    }
+
+    public void setOoferedDate(Date ooferedDate) {
+        this.ooferedDate = ooferedDate;
+    }
+
+    public Date getExchangeDate() {
+        return exchangeDate;
+    }
+
+    public void setExchangeDate(Date exchangeDate) {
+        this.exchangeDate = exchangeDate;
+    }
+
+    public Set<User> getBuyer() {
+        return buyer;
+    }
+
+    public void setBuyer(Set<User> buyer) {
+        this.buyer = buyer;
+    }
+
+    public Set<Product> getProductId() {
+        return productId;
+    }
+
+    public void setProductId(Set<Product> productId) {
+        this.productId = productId;
+    }
+
+    public Integer getRate() {
+        return rate;
+    }
+
+    public void setRate(Integer rate) {
+        this.rate = rate;
+    }
+
     @Column(name="RATE")
     Integer rate;
 
