@@ -11,6 +11,29 @@ public class Product implements Serializable {
     @Id
     Long Id;
 
+    @Column(name = "TITLE")
+    String title;
+
+    @Column(name = "DESCRIPTION")
+    String description;
+
+    @OneToMany(targetEntity = Category.class)
+    @JoinColumn(name = "CATEGORYID")
+    Set<Category> categoryId;
+
+    @OneToMany(targetEntity = Category.class)
+    @JoinColumn(name = "EXCGANEFOR", referencedColumnName = "ID")
+    Set<Category> exchangeFor;
+
+    @Column(name = "DATE")
+    Date date;
+
+    @Column(name = "ISBOUGHT")
+    Boolean isBought;
+
+    @Column(name = "IMAGEURL")
+    String imageUrl;
+
     public Long getId() {
         return Id;
     }
@@ -74,27 +97,4 @@ public class Product implements Serializable {
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
     }
-
-    @Column(name = "TITLE")
-    String title;
-
-    @Column(name = "DESCRIPTION")
-    String description;
-
-    @OneToMany (targetEntity = Category.class)
-    @JoinColumn(name = "CATEGORYID")
-    Set<Category> categoryId;
-
-    @OneToMany (targetEntity = Category.class)
-    @JoinColumn(name = "EXCGANEFOR",referencedColumnName = "ID")
-    Set<Category> exchangeFor;
-
-    @Column(name = "DATE")
-    Date date;
-
-    @Column(name = "ISBOUGHT")
-    Boolean isBought;
-
-    @Column(name = "IMAGEURL")
-    String imageUrl;
 }

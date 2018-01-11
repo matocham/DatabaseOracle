@@ -25,6 +25,9 @@ public class Offer implements Serializable {
     @JoinColumn(name="PRODUCT_ID")
     Set<Product> productId;
 
+    @Column(name="RATE")
+    Integer rate;
+
     public Long getId() {
         return id;
     }
@@ -72,8 +75,5 @@ public class Offer implements Serializable {
     public void setRate(Integer rate) {
         this.rate = rate;
     }
-
-    @Column(name="RATE")
-    Integer rate;
 
 }
