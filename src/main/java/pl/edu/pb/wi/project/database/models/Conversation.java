@@ -8,13 +8,13 @@ public class Conversation implements Serializable {
     @Column(name = "ID")
     Long id;
 
-    @ManyToOne(targetEntity = User.class)
+    @ManyToOne(targetEntity = Users.class)
     @JoinColumn(name = "INIT_SENDER",referencedColumnName = "ID")
-    User initSender;
+    Users initSender;
 
-    @ManyToOne(targetEntity = User.class)
+    @ManyToOne(targetEntity = Users.class)
     @JoinColumn(name = "INIT_RECIVER",referencedColumnName = "ID")
-    User initReciver;
+    Users initReciver;
 
     @ManyToOne(targetEntity = Product.class)
     @JoinColumn(name = "PRODUCT_ID",referencedColumnName = "ID")
@@ -34,19 +34,19 @@ public class Conversation implements Serializable {
         this.id = id;
     }
 
-    public User getInitSender() {
+    public Users getInitSender() {
         return initSender;
     }
 
-    public void setInitSender(User initSender) {
+    public void setInitSender(Users initSender) {
         this.initSender = initSender;
     }
 
-    public User getInitReciver() {
+    public Users getInitReciver() {
         return initReciver;
     }
 
-    public void setInitReciver(User initReciver) {
+    public void setInitReciver(Users initReciver) {
         this.initReciver = initReciver;
     }
 

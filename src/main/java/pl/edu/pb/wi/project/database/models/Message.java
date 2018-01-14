@@ -11,13 +11,13 @@ public class Message implements Serializable {
     @Column(name = "ID")
     Long Id;
 
-    @ManyToOne(targetEntity = User.class)
+    @ManyToOne(targetEntity = Users.class)
     @JoinColumn(name = "SENDER_ID", referencedColumnName = "ID")
-    User  senderId;
+    Users senderId;
 
-    @ManyToOne(targetEntity = User.class)
+    @ManyToOne(targetEntity = Users.class)
     @JoinColumn(name = "RECEIVER_ID", referencedColumnName = "ID")
-    User receiverId;
+    Users receiverId;
 
     @Column (name = "MSG_BODY")
     String msgBody;
@@ -40,19 +40,19 @@ public class Message implements Serializable {
         Id = id;
     }
 
-    public User getSenderId() {
+    public Users getSenderId() {
         return senderId;
     }
 
-    public void setSenderId(User senderId) {
+    public void setSenderId(Users senderId) {
         this.senderId = senderId;
     }
 
-    public User getReceiverId() {
+    public Users getReceiverId() {
         return receiverId;
     }
 
-    public void setReceiverId(User receiverId) {
+    public void setReceiverId(Users receiverId) {
         this.receiverId = receiverId;
     }
 

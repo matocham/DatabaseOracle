@@ -7,9 +7,37 @@ import java.util.Set;
 
 @Entity
 public class Product implements Serializable {
-    @JoinColumn(name = "ID")
     @Id
+    @JoinColumn(name = "ID")
     Long Id;
+
+    @ManyToOne(targetEntity = Users.class)
+    //@JoinColumn(foreignKey = @ForeignKey(name = "product_onwer_fk"))
+    @JoinColumn(name = "OWNER_ID",referencedColumnName = "ID")
+    Users ownerId;
+
+    @Column(name = "TITLE")
+    String title;
+
+    @Column(name = "DESCRIPTION")
+    String description;
+
+    @OneToMany (targetEntity = Category.class)
+    @JoinColumn(name = "CATEGORY_ID")
+    Set<Category> categoryId;
+
+    @OneToMany (targetEntity = Category.class)
+    @JoinColumn(name = "EXCHANGE_FOR",referencedColumnName = "ID")
+    Set<Category> exchangeFor;
+
+    @Column(name = "ADD_DATE")
+    Date date;
+
+    @Column(name = "EXCHANGED")
+    Boolean exchanged;
+
+    @Column(name = "IMAGE_PATH")
+    String imagePath;
 
     public Long getId() {
         return Id;
@@ -17,6 +45,14 @@ public class Product implements Serializable {
 
     public void setId(Long id) {
         Id = id;
+    }
+
+    public Users getOwnerId() {
+        return ownerId;
+    }
+
+    public void setOwnerId(Users ownerId) {
+        this.ownerId = ownerId;
     }
 
     public String getTitle() {
@@ -59,42 +95,19 @@ public class Product implements Serializable {
         this.date = date;
     }
 
-    public Boolean getBought() {
-        return isBought;
+    public Boolean getExchanged() {
+        return exchanged;
     }
 
-    public void setBought(Boolean bought) {
-        isBought = bought;
+    public void setExchanged(Boolean exchanged) {
+        this.exchanged = exchanged;
     }
 
-    public String getImageUrl() {
-        return imageUrl;
+    public String getImagePath() {
+        return imagePath;
     }
 
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
     }
-
-    @Column(name = "TITLE")
-    String title;
-
-    @Column(name = "DESCRIPTION")
-    String description;
-
-    @OneToMany (targetEntity = Category.class)
-    @JoinColumn(name = "CATEGORYID")
-    Set<Category> categoryId;
-
-    @OneToMany (targetEntity = Category.class)
-    @JoinColumn(name = "EXCGANEFOR",referencedColumnName = "ID")
-    Set<Category> exchangeFor;
-
-    @Column(name = "DATE")
-    Date date;
-
-    @Column(name = "ISBOUGHT")
-    Boolean isBought;
-
-    @Column(name = "IMAGEURL")
-    String imageUrl;
 }

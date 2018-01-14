@@ -4,6 +4,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 
 @Entity
+@Table(name = "USERS")
 @NamedStoredProcedureQueries({
         @NamedStoredProcedureQuery(name = "finalize_exchange",
                 procedureName = "utilities.finalize_exchange",
@@ -11,7 +12,7 @@ import java.io.Serializable;
                         @StoredProcedureParameter(mode = ParameterMode.IN, name = "offer_id", type = Long.class)
                 })
 })
-public class User implements Serializable{
+public class Users implements Serializable{
     @Id
     @JoinColumn(name = "ID")
     Long id;
