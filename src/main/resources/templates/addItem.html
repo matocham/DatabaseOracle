@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="baseNoCategories :: pageHead">
+</head>
+<body>
+<script type="application/javascript" th:inline="javascript">
+    var syblingLink = /*[[@{/rest/categories/list/sybling}]]*/ 'test';
+    $(document).ready(function () {
+        $("#image").change(function () {
+            previewFile();
+        });
+        callForCatList(0);
+        $.validator.addMethod('money', function (value, element) {
+            var isValidMoney = /^\d{0,5}(\.\d{0,2})?$/.test(value);
+            return this.optional(element) || isValidMoney;
+            return isValidMoney;
+        }, 'Podaj kwotwę w prawidłowym formacie!');
+
+        $.validator.addMethod('endingCategory', function (value, element) {
+            var isValid = false;
+            $.ajax({
+                url: /*[[@{/rest/navigation/ending}]]*/ 'test',
+                method: "GET",
+                async:false,
+                success: function (data, status, object1) {
+                   isValid = data.ending;
+                },
+                data:{category:value}
+            })
+            return isValid;
+        }, 'Musisz wybrać końcową kategorię!');
+        $("#addItemForm").validate({
+            debug: true,
+            errorClass: "has-error",
+            validClass: "has-success",
+            errorElement: "span",
+            rules: {
+                title: {
+                    required: true,
+                    minlength: 10,
+                    maxlength: 50
+                },
+                description: {
+                    required: true,
+                    minlength: 50,
+                    maxlength: 1000
+                },
+                leftCategory: {
+                    required: true,
+                    endingCategory: true
+                },
+                image: {
+                    required: true
+                },
+                price: {
+                    required: true,
+                    money: true,
+                    number: true,
+                    range: [1, 99999]
+                },
+                shippingPrice: {
+                    required: true,
+                    money: true,
+                    number: true,
+                    range: [1, 99999]
+                },
+                deliveryType: {
+                    required: true
+                }
+            },
+            messages: {
+                title: {
+                    required: "To pole jest wymagane",
+                    minlength: "Tytuł ogłoszenia musi mieć do najmniej 10 znaków",
+                    maxlength: "Tytuł gołoszenia nie może mieć więcej niż 50 znaków"
+                },
+                description: {
+                    required: "To pole jest wymagane",
+                    minlength: "Treść ogłoszenia musi mieć do najmniej 50 znaków",
+                    maxlength: "Treść gołoszenia nie może mieć więcej niż 1000 znaków"
+                },
+                leftCategory: {
+                    required: "Wybierz kategorię",
+                    endingCategory: 'Musisz wybrać końcową kategorię!'
+                },
+                image: {
+                    required: "Dodaj zdjęcie do ogłoszenia"
+                },
+                price: {
+                    required: "Podaj cenę produktu",
+                    money: "Podaj poprawną kwotę",
+                    number: "Podaj wartość numeryczną",
+                    range: "Podaj kwotę od 1 do 99999"
+                },
+                shippingPrice: {
+                    required: "Podaj koszt dostawy",
+                    money: "Podaj poprawną kwotę",
+                    number: "Podaj wartość numeryczną",
+                    range: "Podaj kwotę od 1 do 99999"
+                },
+                deliveryType: {
+                    required: "Wybierz sposób dostawy produktów"
+                }
+            },
+            errorPlacement: function (error, element) {
+                //$(element).parent('div').addClass('has-error');
+            },
+            highlight: function (element, errorClass, validClass) {
+                console.log("highlight");
+                $(element).parent('div').addClass(errorClass);
+                $(element).parent('div').removeClass(validClass);
+            },
+            unhighlight: function (element, errorClass, validClass) {
+                console.log("ungighlight");
+                $(element).parent('div').addClass(validClass);
+                $(element).parent('div').removeClass(errorClass);
+                $(element).nextAll("label").remove();
+            },
+            showErrors: function (errorMap, errorList) {
+                console.log(errorMap);
+                for (var key in errorMap) {
+                    if (errorMap.hasOwnProperty(key)) {
+                        var $field = $("#addItemForm [name=" + key + "]");
+                        if ($field) {
+                            $field.nextAll("label").remove();
+                            var $errorLabel = $("<label></label>");
+                            $errorLabel.attr("for", key);
+                            $errorLabel.addClass("control-label");
+                            $errorLabel.text(errorMap[key]);
+                            $field.after($errorLabel);
+                        }
+                    }
+                }
+                this.defaultShowErrors();
+            },
+            submitHandler: function (form) {
+                if ($(form).valid())
+                    form.submit();
+                return false; // prevent normal form posting
+            }
+        });
+    });
+</script>
+<div class="container-fluid">
+    <div th:replace="baseNoCategories :: header"></div>
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+            <form method="post" th:action="@{/item/add}" class="horizontal-form" id="addItemForm" accept-charset="UTF-8"
+                  enctype="multipart/form-data">
+                <div class="row">
+                    <div class="col-sm-10 col-sm-offset-2">
+                        <h2>Dodaj nowe ogłoszenie</h2>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="title" class="col-sm-2 control-label">Tytuł</label>
+                    <div class="col-sm-10">
+                        <input type="text" name="title" id="title" class="form-control "/>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="description" class="col-sm-2 control-label">Opis</label>
+                    <div class="col-sm-10">
+                        <textarea class="form-control " name="description" id="description" rows="10"/>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="leftCategory" class="col-sm-2 control-label">Kategoria</label>
+                    <div class="col-sm-10">
+                        <select size="10" id="leftCategory" name="leftCategory" class="form-control ">
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="image" class="col-sm-2 control-label">Zdjęcie</label>
+                    <div class="col-sm-10">
+                        <input type="file" class="form-control " name="image" id="image" accept="image/*"/>
+                        <img src="#" id="previewImage" class="sr-only previewImage"/>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="price" class="col-sm-2 control-label">Cena</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control " name="price" id="price"/>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="shippingPrice" class="col-sm-2 control-label">Typ dostawy</label>
+                    <div class="col-sm-10">
+                        <select class="form-control " name="deliveryType" id="deliveryType">
+                            <option value="36">paczka pocztowa ekonomiczna</option>
+                            <option value="38">paczka pocztowa priorytetowa</option>
+                            <option value="40">przesyłka pobraniowa</option>
+                            <option value="44">przesyłka kurierska</option>
+                            <option value="45">przesyłka kurierska pobraniowa</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="shippingPrice" class="col-sm-2 control-label">Koszt dostawy</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control " name="shippingPrice" id="shippingPrice"/>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-sm-offset-2 col-sm-10">
+                        <button type="submit" class="btn btn-primary">Dodaj ogłoszenie</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>
