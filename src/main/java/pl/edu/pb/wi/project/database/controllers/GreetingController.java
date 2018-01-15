@@ -19,8 +19,5 @@ public class GreetingController {
         return "login";
     }
 
-    @RequestMapping("/category")
-    public String greeting2() {
-        return "category";
-    }
+
 }

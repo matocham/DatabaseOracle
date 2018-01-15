@@ -48,11 +48,8 @@
         <span class="btn btn-primary btn-block">Categories</span>
         <!--<div class="loader box" id="leftLoader"></div>-->
         <ul id="catList">
-            <li>
-                <a>Cat1</a>
-            </li>
-            <li>
-                <a>Cat2</a>
+            <li th:each="cat : ${categories}">
+                <a th:text="${cat.name}" th:href="@{/category(id=${cat.id})}"></a>
             </li>
         </ul>
     </div>

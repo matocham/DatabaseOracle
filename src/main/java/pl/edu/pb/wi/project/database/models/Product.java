@@ -3,7 +3,6 @@ package pl.edu.pb.wi.project.database.models;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
-import java.util.Set;
 
 @Entity
 public class Product implements Serializable {
@@ -13,7 +12,7 @@ public class Product implements Serializable {
 
     @ManyToOne(targetEntity = Users.class)
     @JoinColumn(name = "OWNER_ID",referencedColumnName = "ID")
-    Users ownerId;
+    Users owner;
 
     @Column(name = "TITLE")
     String title;
@@ -21,16 +20,16 @@ public class Product implements Serializable {
     @Column(name = "DESCRIPTION")
     String description;
 
-    @OneToMany (targetEntity = Category.class)
+    @ManyToOne (targetEntity = Category.class)
     @JoinColumn(name = "CATEGORY_ID", referencedColumnName = "ID")
-    Set<Category> categoryId;
+    Category category;
 
-    @OneToMany (targetEntity = Category.class)
+    @ManyToOne (targetEntity = Category.class)
     @JoinColumn(name = "EXCHANGE_FOR",referencedColumnName = "ID")
-    Set<Category> exchangeFor;
+    Category exchangeFor;
 
     @Column(name = "ADD_DATE")
-    Date date;
+    Date addDate;
 
     @Column(name = "EXCHANGED")
     Boolean exchanged;
@@ -46,12 +45,12 @@ public class Product implements Serializable {
         Id = id;
     }
 
-    public Users getOwnerId() {
-        return ownerId;
+    public Users getOwner() {
+        return owner;
     }
 
-    public void setOwnerId(Users ownerId) {
-        this.ownerId = ownerId;
+    public void setOwner(Users ownerId) {
+        this.owner = ownerId;
     }
 
     public String getTitle() {
@@ -70,28 +69,28 @@ public class Product implements Serializable {
         this.description = description;
     }
 
-    public Set<Category> getCategoryId() {
-        return categoryId;
+    public Category getCategory() {
+        return category;
     }
 
-    public void setCategoryId(Set<Category> categoryId) {
-        this.categoryId = categoryId;
+    public void setCategory(Category categoryId) {
+        this.category = categoryId;
     }
 
-    public Set<Category> getExchangeFor() {
+    public Category getExchangeFor() {
         return exchangeFor;
     }
 
-    public void setExchangeFor(Set<Category> exchangeFor) {
+    public void setExchangeFor(Category exchangeFor) {
         this.exchangeFor = exchangeFor;
     }
 
-    public Date getDate() {
-        return date;
+    public Date getAddDate() {
+        return addDate;
     }
 
-    public void setDate(Date date) {
-        this.date = date;
+    public void setAddDate(Date addDate) {
+        this.addDate = addDate;
     }
 
     public Boolean getExchanged() {
