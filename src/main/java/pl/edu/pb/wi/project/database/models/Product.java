@@ -12,7 +12,6 @@ public class Product implements Serializable {
     Long Id;
 
     @ManyToOne(targetEntity = Users.class)
-    //@JoinColumn(foreignKey = @ForeignKey(name = "product_onwer_fk"))
     @JoinColumn(name = "OWNER_ID",referencedColumnName = "ID")
     Users ownerId;
 
@@ -23,7 +22,7 @@ public class Product implements Serializable {
     String description;
 
     @OneToMany (targetEntity = Category.class)
-    @JoinColumn(name = "CATEGORY_ID")
+    @JoinColumn(name = "CATEGORY_ID", referencedColumnName = "ID")
     Set<Category> categoryId;
 
     @OneToMany (targetEntity = Category.class)

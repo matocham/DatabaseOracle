@@ -121,7 +121,7 @@ CREATE OR REPLACE TRIGGER product_insert_trigger
     SELECT product_seq.nextval INTO :new.id from dual;
     --:new.add_date := current_date;
   END;
-/
+
 CREATE OR REPLACE TRIGGER conversation_insert_trigger
   BEFORE INSERT ON conversation FOR EACH ROW
   BEGIN

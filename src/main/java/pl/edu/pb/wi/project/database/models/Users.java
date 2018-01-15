@@ -1,5 +1,7 @@
 package pl.edu.pb.wi.project.database.models;
 
+import org.hibernate.annotations.GenericGenerator;
+
 import javax.persistence.*;
 import java.io.Serializable;
 
@@ -13,15 +15,21 @@ import java.io.Serializable;
                 })
 })
 public class Users implements Serializable{
+    public void setUserPassword(String userPassword) {
+        this.userPassword = userPassword;
+    }
+
     @Id
-    @JoinColumn(name = "ID")
+    @SequenceGenerator(name="users_seq", sequenceName="users_seq")
+    @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="users_seq")
     Long id;
 
     @Column(name = "NAME")
+
     String name;
 
     @Column(name = "LAST_NAME")
-    String surname;
+    String lastName;
 
     @Column(name = "LOGIN")
     String login;
@@ -57,12 +65,12 @@ public class Users implements Serializable{
         this.name = name;
     }
 
-    public String getSurname() {
-        return surname;
+    public String getLastName() {
+        return lastName;
     }
 
-    public void setSurname(String surname) {
-        this.surname = surname;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public String getLogin() {

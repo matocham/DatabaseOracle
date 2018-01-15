@@ -11,7 +11,7 @@ public class Offer implements Serializable {
     Long id;
 
     @Column(name="OFFERED_DATE")
-    Date ooferedDate;
+    Date offeredDate;
 
     @Column(name="EXCHANGE_DATE")
     Date exchangeDate;
@@ -32,12 +32,12 @@ public class Offer implements Serializable {
         this.id = id;
     }
 
-    public Date getOoferedDate() {
-        return ooferedDate;
+    public Date getOfferedDate() {
+        return offeredDate;
     }
 
-    public void setOoferedDate(Date ooferedDate) {
-        this.ooferedDate = ooferedDate;
+    public void setOfferedDate(Date offeredDate) {
+        this.offeredDate = offeredDate;
     }
 
     public Date getExchangeDate() {

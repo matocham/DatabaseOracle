@@ -11,7 +11,7 @@
 <ol>
     <li th:each="user : ${allUsers}">
         <p th:text="${user.name}"></p>
-        <p th:text="${user.surname}"></p>
+        <p th:text="${user.lastName}"></p>
         <p th:text="${user.city}"></p>
     </li>
 </ol>
@@ -20,7 +20,7 @@
     <ol>
         <li th:each="user : ${foundUser}">
             <p th:text="${user.name}"></p>
-            <p th:text="${user.surname}"></p>
+            <p th:text="${user.lastName}"></p>
             <p th:text="${user.city}"></p>
         </li>
     </ol>
