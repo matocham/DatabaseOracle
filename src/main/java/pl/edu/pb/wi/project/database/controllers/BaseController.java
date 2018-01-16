@@ -14,7 +14,9 @@ public class BaseController {
     ProductRepository productRepository;
 
     @RequestMapping("/")
-    String index() {
+    String index(Model model) {
+        Iterable<Product> productsFromCategory = productRepository.findByExchangedFalseOrderByAddDateDesc();
+        model.addAttribute("products", productsFromCategory);
         return "index";
     }
 

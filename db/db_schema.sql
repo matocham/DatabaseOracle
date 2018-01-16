@@ -223,29 +223,29 @@ INSERT INTO category(name, parentCategory) VALUES ('telefony', 1);
 INSERT INTO category(name, parentCategory) VALUES ('motoryzacja', NULL);
 
 INSERT INTO product(owner_id, title, description, category_id, exchange_for, add_date, exchanged, image_path)
-VALUES (2, 'root', 'description examle 1', 1, 1, TO_DATE('2017/11/01', 'yyyy/mm/dd'), 0, 'random_string1/image.png');
+VALUES (2, 'root', 'description examle 1', 1, 1, TO_DATE('2017/11/01', 'yyyy/mm/dd'), 0, '/images/product/1/1.png');
 INSERT INTO product(owner_id, title, description, category_id, exchange_for, add_date, exchanged, image_path)
-VALUES (5, 'elekronika', 'description examle 2', 1, 2, TO_DATE('2017/10/15', 'yyyy/mm/dd'), 0, 'random_string2/image.png');
+VALUES (5, 'elekronika', 'description examle 2', 1, 2, TO_DATE('2017/10/15', 'yyyy/mm/dd'), 0, '/images/product/2/2.png');
 INSERT INTO product(owner_id, title, description, category_id, exchange_for, add_date, exchanged, image_path)
-VALUES (2, 'elektronika 2', 'description examle 3', 2, 3, TO_DATE('2017/10/11', 'yyyy/mm/dd'), 0, 'random_string3/image.png');
+VALUES (2, 'elektronika 2', 'description examle 3', 2, 3, TO_DATE('2017/10/11', 'yyyy/mm/dd'), 0, '/images/product/3/3.png');
 INSERT INTO product(owner_id, title, description, category_id, exchange_for, add_date, exchanged, image_path)
-VALUES (3, 'dom i ogród', 'description examle 4', 2, 4, TO_DATE('2017/09/20', 'yyyy/mm/dd'), 0, 'random_string4/image.png');
+VALUES (3, 'dom i ogród', 'description examle 4', 2, 4, TO_DATE('2017/09/20', 'yyyy/mm/dd'), 0, '/images/product/4/5.png');
 INSERT INTO product(owner_id, title, description, category_id, exchange_for, add_date, exchanged, image_path)
-VALUES (5, 'motoryzacja', 'description examle 5', 7, 3, TO_DATE('2017/08/11', 'yyyy/mm/dd'), 0, 'random_string5/image.png');
+VALUES (5, 'motoryzacja', 'description examle 5', 7, 3, TO_DATE('2017/08/11', 'yyyy/mm/dd'), 0, '/images/product/5/5.png');
 INSERT INTO product(owner_id, title, description, category_id, exchange_for, add_date, exchanged, image_path)
-VALUES (4, 'komputery stacjonarne', 'description examle 6', 4, 2, TO_DATE('2017/07/11', 'yyyy/mm/dd'), 0, 'random_string6/image.png');
+VALUES (4, 'komputery stacjonarne', 'description examle 6', 4, 2, TO_DATE('2017/07/11', 'yyyy/mm/dd'), 0, '/images/product/6/6.png');
 INSERT INTO product(owner_id, title, description, category_id, exchange_for, add_date, exchanged, image_path)
-VALUES (4, 'laptopy', 'description examle 7', 5, 7, TO_DATE('2017/06/01', 'yyyy/mm/dd'), 1, 'random_string7/image.png');
+VALUES (4, 'laptopy', 'description examle 7', 5, 7, TO_DATE('2017/06/01', 'yyyy/mm/dd'), 1, '/images/product/7/7.png');
 INSERT INTO product(owner_id, title, description, category_id, exchange_for, add_date, exchanged, image_path)
-VALUES (1, 'telefony', 'description examle 8', 6, 1, TO_DATE('2017/10/24', 'yyyy/mm/dd'), 0, 'random_string8/image.png');
+VALUES (1, 'telefony', 'description examle 8', 6, 1, TO_DATE('2017/10/24', 'yyyy/mm/dd'), 0, '/images/product/8/8.png');
 INSERT INTO product(owner_id, title, description, category_id, exchange_for, add_date, exchanged, image_path)
-VALUES (1, 'motoryzacja 2', 'description examle 9', 7, 1, TO_DATE('2017/10/05', 'yyyy/mm/dd'), 0, 'random_string9/image.png');
+VALUES (1, 'motoryzacja 2', 'description examle 9', 7, 1, TO_DATE('2017/10/05', 'yyyy/mm/dd'), 0, '/images/product/9/9.png');
 INSERT INTO product(owner_id, title, description, category_id, exchange_for, add_date, exchanged, image_path)
-VALUES (4, 'stacjonarne 2', 'description examle 10', 4, 7, TO_DATE('2017/07/22', 'yyyy/mm/dd'), 0, 'random_string10/image.png');
+VALUES (4, 'stacjonarne 2', 'description examle 10', 4, 7, TO_DATE('2017/07/22', 'yyyy/mm/dd'), 0, '/images/product/10/10.png');
 INSERT INTO product(owner_id, title, description, category_id, exchange_for, add_date, exchanged, image_path)
-VALUES (3, 'motoryzacja 3', 'description examle 11', 7, 5, TO_DATE('2017/05/22', 'yyyy/mm/dd'), 1, 'random_string11/image.png');
+VALUES (3, 'motoryzacja 3', 'description examle 11', 7, 5, TO_DATE('2017/05/22', 'yyyy/mm/dd'), 1, '/images/product/11/11.png');
 INSERT INTO product(owner_id, title, description, category_id, exchange_for, add_date, exchanged, image_path)
-VALUES (2, 'stacjonarne 3', 'description examle 12', 4, 2, TO_DATE('2017/05/22', 'yyyy/mm/dd'), 0, 'random_string12/image.png');
+VALUES (2, 'stacjonarne 3', 'description examle 12', 4, 2, TO_DATE('2017/05/22', 'yyyy/mm/dd'), 0, '/images/product/12/12.png');
 
 INSERT INTO conversation(init_sender, init_receiver, product_id, sender_deleted, receiver_deleted) VALUES (1, 2, 1, 0, 0);
 INSERT INTO conversation(init_sender, init_receiver, product_id, sender_deleted, receiver_deleted) VALUES (4, 5, 2, 0, 0);

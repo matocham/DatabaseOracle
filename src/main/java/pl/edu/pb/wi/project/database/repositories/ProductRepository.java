@@ -14,4 +14,6 @@ public interface ProductRepository extends CrudRepository<Product, Long> {
     List<Product> findByOwnerId(Long id);
 
     List<Product> findByOwnerIdAndExchanged(Long id, Boolean exchanged);
+
+    List<Product> findByExchangedFalseOrderByAddDateDesc();
 }
