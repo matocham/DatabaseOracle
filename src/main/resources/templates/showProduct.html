@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="baseNoCategories :: pageHead">
+</head>
+<body>
+
+<div class="container-fluid">
+    <div th:replace="baseNoCategories :: header"></div>
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+            <ol id="navigation" class="breadcrumb"></ol>
+            <h1 th:text="${add.title}">Title</h1>
+            <div class="row">
+                <div th:if="${add.imageUrl}" class="col-md-4" id="images">
+                    <img src="#" th:src="${add.imageUrl}" alt="image to place"/>
+                </div>
+                <div th:unless="${add.imageUrl}" class="col-md-4" id="image-blank">
+                    <img src="#" th:src="@{/resources/images/noimage.png}"
+                         alt="image to place"/>
+                </div>
+                <div class="col-md-4 col-md-offset-1 paddTop" id="details">
+                    <div class='h5 owner' th:text="'Wystawiony przez: '+${add.owner}">użytkownik</div>
+                    <div class='h5 state' th:text="'Miejscowość: '+${add.state}">Niemyje Ząbki</div>
+                    <div class='h6 addedDate2' th:inline="text"><b>Dodano</b>&nbsp;[[${#dates.format(product.addDate, 'dd-MM-yyyy')}]]</div>
+                    <div th:if="${add.priceWithDelivery}" class='h6 addedDate2'>
+                        <b th:text="'Zamieni się za: '${add.priceWithDelivery}">Frytki</b>
+                    </div>
+                </div>
+            </div>
+            <div class="row" id="simpleDescription">
+                <h2>Opis</h2>
+                <div th:utext="${add.description}">Opis</div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
