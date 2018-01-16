@@ -3,6 +3,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
 import javax.persistence.*;
+
 @Entity
 @Table(name = "OFFER")
 public class Offer implements Serializable {

@@ -123,33 +123,31 @@
     margin-bottom: 5px;
 }
 
-.addState {
+.fromCategory {
     margin-top: 0px;
     margin-bottom: 0px;
     color:darkgray;
 }
 
-.addPrice{
+.echangeFor{
     margin-top: 5px;
     margin-bottom: 0px;
     color:black;
 }
 
-.addPriceType {
-    margin-top: 0px;
-    margin-bottom: 1px;
-    color:red;
-}
-
-.addEndDate {
+.city {
     margin-top: 8px;
     margin-bottom: 0px;
 }
 
-.addPriceWithDelivery {
+.addedDate {
     margin-top: 6px;
     margin-bottom: 1px;
     color:darkgray;
+}
+
+.addedDate2{
+    color:black;
 }
 
 .noResults{
@@ -171,7 +169,7 @@
     color:#5336e1;
 }
 
-.price{
+/*.price{
     color: #3356b4;
     margin-top: 5px !important;
     margin-bottom: 1px !important;
@@ -185,11 +183,7 @@
     margin-bottom: 0px;
     text-align: center;
     color: darkred;
-}
-
-.priceWithDelivery{
-    color:black;
-}
+}*/
 
 .previewImage{
     width:100%;

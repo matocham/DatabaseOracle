@@ -2,7 +2,16 @@ package pl.edu.pb.wi.project.database.models;
 
 import javax.persistence.*;
 import java.io.Serializable;
+
 @Entity
+@NamedStoredProcedureQueries({
+        @NamedStoredProcedureQuery(name = "remove_conversation",
+                procedureName = "utilities.remove_conversation",
+                parameters = {
+                        @StoredProcedureParameter(mode = ParameterMode.IN, name = "conv_id", type = Long.class),
+                        @StoredProcedureParameter(mode = ParameterMode.IN, name = "user_id", type = Long.class)
+                })
+})
 public class Conversation implements Serializable {
     @Id
     @Column(name = "ID")

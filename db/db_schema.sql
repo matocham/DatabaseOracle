@@ -106,6 +106,7 @@ CREATE OR REPLACE TRIGGER users_insert_trigger
 BEFORE INSERT ON users FOR EACH ROW
   BEGIN
     SELECT users_seq.nextval INTO :new.id from dual;
+    :new.user_password = utilities.get_hash_val(:new.user_password);
   END;
 
 CREATE OR REPLACE TRIGGER category_insert_trigger
@@ -148,8 +149,6 @@ AS
   PROCEDURE remove_conversation(conv_id conversation.id%TYPE, user_id users.id%TYPE);
   FUNCTION get_hash_val(p_in VARCHAR2)
     RETURN VARCHAR2;
-  FUNCTION is_suitable_for_exchange(exchanged_product product.id%TYPE, offered_product product.id%TYPE)
-    RETURN INTEGER;
 END;
 
 CREATE OR REPLACE PACKAGE BODY utilities AS
@@ -393,6 +392,3 @@ drop trigger OFFER_INSERT_TRIGGER;
 drop trigger PRODUCT_INSERT_TRIGGER;
 drop trigger USERS_INSERT_TRIGGER;
 drop trigger CATEGORY_INSERT_TRIGGER;
-
-
-select * from product where id=3 and utilities.is_suitable_for_exchange(id,10) = 1;

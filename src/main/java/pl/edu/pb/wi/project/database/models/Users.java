@@ -7,13 +7,6 @@ import java.io.Serializable;
 
 @Entity
 @Table(name="Users")
-@NamedStoredProcedureQueries({
-        @NamedStoredProcedureQuery(name = "finalize_exchange",
-                procedureName = "utilities.finalize_exchange",
-                parameters = {
-                        @StoredProcedureParameter(mode = ParameterMode.IN, name = "offer_id", type = Long.class)
-                })
-})
 public class Users implements Serializable{
     public void setUserPassword(String userPassword) {
         this.userPassword = userPassword;

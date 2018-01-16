@@ -3,16 +3,6 @@
 <head th:replace="baseNoCategories :: pageHead">
 </head>
 <body>
-<script type="application/javascript" th:inline="javascript">
-    var category = /*[[${add.category}]]*/"test";
-    var breadcrumbsLink = /*[[@{/rest/navigation/breadcrumbs}]]*/ 'test';
-    $(document).ready(function () {
-        $("#navigation").hide();
-        if(category !="0"){
-            callForBreadcrumbs(category);
-        }
-    });
-</script>
 <div class="container-fluid">
     <div th:replace="baseNoCategories :: header"></div>
     <div class="row">
@@ -38,11 +28,11 @@
                         <b th:text="${add.priceBidding}">cena</b>
                         <p class='h6 priceType'>licytacja</p>
                     </div>
-                    <div th:if="${add.endDate}" class='h6 addEndDate'>
+                    <div th:if="${add.endDate}" class='h6 city'>
                         <span th:text="'Do końca: '+${add.lastTime}">czas trwania</span><br/>
                         <span th:text="'Koniec: '+${add.endDate}">koniec</span>
                     </div>
-                    <div th:if="${add.priceWithDelivery}" class='h6 priceWithDelivery'>
+                    <div th:if="${add.priceWithDelivery}" class='h6 addedDate2'>
                         <b th:text="${add.priceWithDelivery}">cena</b> z dostawą
                     </div>
                 </div>

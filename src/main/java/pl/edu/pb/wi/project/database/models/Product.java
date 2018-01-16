@@ -9,7 +9,7 @@ import java.util.Set;
 public class Product implements Serializable {
     @Id
     @JoinColumn(name = "ID")
-    Long Id;
+    Long id;
 
     @Column(name = "TITLE")
     String title;
@@ -35,11 +35,11 @@ public class Product implements Serializable {
     String imageUrl;
 
     public Long getId() {
-        return Id;
+        return id;
     }
 
     public void setId(Long id) {
-        Id = id;
+        this.id = id;
     }
 
 
