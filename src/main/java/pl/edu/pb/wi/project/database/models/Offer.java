@@ -1,36 +1,34 @@
 package pl.edu.pb.wi.project.database.models;
+
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
-import javax.persistence.*;
 
 @Entity
-@NamedStoredProcedureQueries({
-        @NamedStoredProcedureQuery(name = "finalize_exchange",
-                procedureName = "utilities.finalize_exchange",
-                parameters = {
-                        @StoredProcedureParameter(mode = ParameterMode.IN, name = "offer_id", type = Long.class)
-                })
-})
+@Table(name = "OFFER")
 public class Offer implements Serializable {
 
-    @JoinColumn(name="ID")
+    @JoinColumn(name = "ID")
     @Id
     Long id;
 
-    @Column(name="OFFERED_DATE")
+    @Column(name = "OFFERED_DATE")
     Date offeredDate;
 
-    @Column(name="EXCHANGE_DATE")
+    @Column(name = "EXCHANGE_DATE")
     Date exchangeDate;
 
-    @OneToMany (targetEntity = Users.class)
-    @JoinColumn (name="BUYER_ID",referencedColumnName = "ID")
-    Set<Users> buyer;
+    @ManyToOne(targetEntity = Users.class)
+    @JoinColumn(name = "BUYER_ID", referencedColumnName = "ID")
+    Users buyer;
 
-    @OneToMany (cascade=CascadeType.ALL, targetEntity=Product.class)
-    @JoinColumn(name="PRODUCT_ID")
+    @OneToMany(cascade = CascadeType.ALL, targetEntity = Product.class)
+    @JoinColumn(name = "PRODUCT_ID")
     Set<Product> productId;
+
+    @Column(name = "RATE")
+    Integer rate;
 
     public Long getId() {
         return id;
@@ -56,11 +54,11 @@ public class Offer implements Serializable {
         this.exchangeDate = exchangeDate;
     }
 
-    public Set<Users> getBuyer() {
+    public Users getBuyer() {
         return buyer;
     }
 
-    public void setBuyer(Set<Users> buyer) {
+    public void setBuyer(Users buyer) {
         this.buyer = buyer;
     }
 
@@ -79,8 +77,5 @@ public class Offer implements Serializable {
     public void setRate(Integer rate) {
         this.rate = rate;
     }
-
-    @Column(name="RATE")
-    Integer rate;
 
 }

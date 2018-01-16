@@ -6,7 +6,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "USERS")
+@Table(name="Users")
 public class Users implements Serializable{
     public void setUserPassword(String userPassword) {
         this.userPassword = userPassword;

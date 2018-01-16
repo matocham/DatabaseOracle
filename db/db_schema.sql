@@ -22,7 +22,6 @@ DROP SEQUENCE offer_seq;
 -- DROP TRIGGER message_auto_inc;
 -- DROP TRIGGER offer_auto_inc;
 
---Stworzenie tabel
 CREATE TABLE users (
   id            NUMBER CONSTRAINT user_pk PRIMARY KEY,
   name          VARCHAR2(50),
@@ -48,7 +47,7 @@ CREATE TABLE product (
   owner_id     NUMBER CONSTRAINT product_onwer_fk REFERENCES users (id),
   title        VARCHAR2(100),
   description  VARCHAR2(1000),
-  category_id  NUMBER CONSTRAINT product_category_fk REFERENCES category (id),
+  category_id   NUMBER CONSTRAINT product_category_fk REFERENCES category (id),
   exchange_for NUMBER CONSTRAINT product_exchange_for_fk REFERENCES category (id),
   add_date     DATE CONSTRAINT product_date NOT NULL,
   exchanged    NUMBER(1, 0) DEFAULT 0,
@@ -104,47 +103,46 @@ CREATE SEQUENCE offer_seq MINVALUE 1 NOMAXVALUE START WITH 1 INCREMENT BY 1 NOCA
 
 --stworzenie triggerów do autoincrement
 CREATE OR REPLACE TRIGGER users_insert_trigger
-  BEFORE INSERT ON users FOR EACH ROW
+BEFORE INSERT ON users FOR EACH ROW
   BEGIN
     SELECT users_seq.nextval INTO :new.id from dual;
     :new.user_password = utilities.get_hash_val(:new.user_password);
   END;
-/
+
 CREATE OR REPLACE TRIGGER category_insert_trigger
-  BEFORE INSERT ON category FOR EACH ROW
+BEFORE INSERT ON category FOR EACH ROW
   BEGIN
     SELECT category_seq.nextval INTO :new.id from dual;
   END;
-/
+
 CREATE OR REPLACE TRIGGER product_insert_trigger
-  BEFORE INSERT ON product FOR EACH ROW
+BEFORE INSERT ON product FOR EACH ROW
   BEGIN
     SELECT product_seq.nextval INTO :new.id from dual;
     --:new.add_date := current_date;
   END;
 
 CREATE OR REPLACE TRIGGER conversation_insert_trigger
-  BEFORE INSERT ON conversation FOR EACH ROW
+BEFORE INSERT ON conversation FOR EACH ROW
   BEGIN
     SELECT conversation_seq.nextval INTO :new.id from dual;
   END;
-/
+
 CREATE OR REPLACE TRIGGER message_insert_trigger
-  BEFORE INSERT ON message FOR EACH ROW
+BEFORE INSERT ON message FOR EACH ROW
   BEGIN
     SELECT message_seq.nextval INTO :new.id from dual;
     --:new.send_date := current_date;
   END;
-/
+
 CREATE OR REPLACE TRIGGER offer_insert_trigger
-  BEFORE INSERT ON offer FOR EACH ROW
+BEFORE INSERT ON offer FOR EACH ROW
   BEGIN
     SELECT offer_seq.nextval INTO :new.id from dual;
     --:new.offered_date := current_date;
   END;
-/
 
---stworzenie procedur i funkcji w paczce
+--stworzenie procedur i funkcji
 CREATE OR REPLACE PACKAGE utilities
 AS
   PROCEDURE finalize_exchange(offer_id offer.id%TYPE);
@@ -152,7 +150,7 @@ AS
   FUNCTION get_hash_val(p_in VARCHAR2)
     RETURN VARCHAR2;
 END;
-/
+
 CREATE OR REPLACE PACKAGE BODY utilities AS
   PROCEDURE finalize_exchange(offer_id offer.id%TYPE)
   AS
@@ -185,9 +183,9 @@ CREATE OR REPLACE PACKAGE BODY utilities AS
       IF row_count_as_sender = row_count_as_receiver THEN
         raise_application_error(-20003, 'Data is inconsistent. Sender and receiver are the same person');
       ELSIF row_count_as_sender > 0 THEN
-        UPDATE conversation SET sender_deleted = 1 WHERE id = conv_id;
+          UPDATE conversation SET sender_deleted = 1 WHERE id = conv_id;
       ELSIF row_count_as_receiver > 0 THEN
-        UPDATE conversation SET receiver_deleted = 1 WHERE id = conv_id;
+          UPDATE conversation SET receiver_deleted = 1 WHERE id = conv_id;
       ELSE
         RAISE NO_DATA_FOUND;
       END IF;
@@ -200,29 +198,52 @@ CREATE OR REPLACE PACKAGE BODY utilities AS
       l_hash := RAWTOHEX(UTL_RAW.cast_to_raw(DBMS_OBFUSCATION_TOOLKIT.md5(input_string => p_in)));
       RETURN l_hash;
     END;
+
+  FUNCTION is_suitable_for_exchange(exchanged_product product.id%TYPE, offered_product product.id%TYPE)
+    RETURN INTEGER
+  IS
+    exchange_for_c product.exchange_for%TYPE;
+    offered_category category.id%TYPE;
+    cursor categories(root_cat category.id%TYPE) IS select id, name from category START WITH id = root_cat CONNECT BY PRIOR id = parentCategory;
+  BEGIN
+    select exchange_for into exchange_for_c from product where product.id = exchanged_product;
+    select category_id into offered_category from product where product.id = offered_product;
+    for cat in categories(exchange_for_c)
+    LOOP
+      IF cat.id = offered_category THEN
+        RETURN 1;
+      END IF;
+    END LOOP;
+    RETURN 0;
+    EXCEPTION
+    WHEN NO_DATA_FOUND then return 0;
+    when OTHERS THEN raise_application_error(-20005, 'Processing error: ' || sqlerrm);
+  END;
 END;
-/
+
 -- przykladowe dane
 INSERT INTO users(name, last_name, login, user_password, email, city, premium_user, admin)
-VALUES ('Adam', 'Nowak', 'a_nowak', 'pass1', 'anowak@examle.com', 'Białystok', 0, 0);
+  VALUES ('Adam', 'Nowak', 'a_nowak', utilities.get_hash_val('pass1'), 'anowak@examle.com', 'Białystok', 0, 0);
 INSERT INTO users(name, last_name, login, user_password, email, city, premium_user, admin)
-VALUES ('Tomasz', 'Kowalski', 't_kowalski', 'pass2', 'tkowalski@examle.com', 'Warszawa', 1, 0);
+  VALUES ('Tomasz', 'Kowalski', 't_kowalski', utilities.get_hash_val('pass2'), 'tkowalski@examle.com', 'Warszawa', 1, 0);
 INSERT INTO users(name, last_name, login, user_password, email, city, premium_user, admin)
-VALUES ('Sebastian', 'Wiśniewski', 's_wisniewski', 'pass3', 'swisniewski@examle.com', 'Gdańsk', 1, 0);
+  VALUES ('Sebastian', 'Wiśniewski', 's_wisniewski', utilities.get_hash_val('pass3'), 'swisniewski@examle.com', 'Gdańsk', 1, 0);
 INSERT INTO users(name, last_name, login, user_password, email, city, premium_user, admin)
-VALUES ('Bartosz', 'Brzozowski', 'b_brzozowski', 'pass4', 'bbrzozowski@examle.com', 'Białystok', 0, 1);
+  VALUES ('Bartosz', 'Brzozowski', 'b_brzozowski', utilities.get_hash_val('pass4'), 'bbrzozowski@examle.com', 'Białystok', 0, 1);
 INSERT INTO users(name, last_name, login, user_password, email, city, premium_user, admin)
-VALUES ('Konrad', 'Zalewski', 'k_zalewski', 'pass5', 'kzalewski@examle.com', 'Gdańsk', 0, 0);
+  VALUES ('Konrad', 'Zalewski', 'k_zalewski', utilities.get_hash_val('pass5'), 'kzalewski@examle.com', 'Gdańsk', 0, 0);
 
-INSERT INTO category(name, parentCategory) VALUES ('elektronika', NULL);
-INSERT INTO category(name, parentCategory) VALUES ('dom i ogród', NULL);
-INSERT INTO category(name, parentCategory) VALUES ('komputery', 1);
-INSERT INTO category(name, parentCategory) VALUES ('stacjonarne', 3);
-INSERT INTO category(name, parentCategory) VALUES ('laptopy', 3);
-INSERT INTO category(name, parentCategory) VALUES ('telefony', 1);
-INSERT INTO category(name, parentCategory) VALUES ('motoryzacja', NULL);
+INSERT INTO category(name, parentCategory) VALUES ('root', NULL);
+INSERT INTO category(name, parentCategory) VALUES ('elektronika', 1);
+INSERT INTO category(name, parentCategory) VALUES ('dom i ogród', 1);
+INSERT INTO category(name, parentCategory) VALUES ('komputery', 2);
+INSERT INTO category(name, parentCategory) VALUES ('stacjonarne', 4);
+INSERT INTO category(name, parentCategory) VALUES ('laptopy', 4);
+INSERT INTO category(name, parentCategory) VALUES ('telefony', 2);
+INSERT INTO category(name, parentCategory) VALUES ('motoryzacja', 1);
 
 INSERT INTO product(owner_id, title, description, category_id, exchange_for, add_date, exchanged, image_path)
+
 VALUES (2, 'root', 'description examle 1', 1, 1, TO_DATE('2017/11/01', 'yyyy/mm/dd'), 0, '/images/product/1/1.png');
 INSERT INTO product(owner_id, title, description, category_id, exchange_for, add_date, exchanged, image_path)
 VALUES (5, 'elekronika', 'description examle 2', 1, 2, TO_DATE('2017/10/15', 'yyyy/mm/dd'), 0, '/images/product/2/2.png');
@@ -256,29 +277,29 @@ INSERT INTO conversation(init_sender, init_receiver, product_id, sender_deleted,
 INSERT INTO conversation(init_sender, init_receiver, product_id, sender_deleted, receiver_deleted) VALUES (2, 4, 6, 0, 0);
 
 INSERT INTO message(sender_id, receiver_id, msg_body, is_displayed, send_date, conversation)
-VALUES (1, 2, 'message text 1', 1, TO_DATE('2017/11/01 10:20:20', 'yyyy/mm/dd HH24:MI:SS'), 1);
+  VALUES (1, 2, 'message text 1', 1, TO_DATE('2017/11/01 10:20:20', 'yyyy/mm/dd HH24:MI:SS'), 1);
 INSERT INTO message(sender_id, receiver_id, msg_body, is_displayed, send_date, conversation)
-VALUES (2, 1, 'message text 2', 1, TO_DATE('2017/11/01 11:33:21', 'yyyy/mm/dd HH24:MI:SS'), 1);
+  VALUES (2, 1, 'message text 2', 1, TO_DATE('2017/11/01 11:33:21', 'yyyy/mm/dd HH24:MI:SS'), 1);
 INSERT INTO message(sender_id, receiver_id, msg_body, is_displayed, send_date, conversation)
-VALUES (1, 2, 'message text 3', 0, TO_DATE('2017/11/03 14:14:14', 'yyyy/mm/dd HH24:MI:SS'), 1);
+  VALUES (1, 2, 'message text 3', 0, TO_DATE('2017/11/03 14:14:14', 'yyyy/mm/dd HH24:MI:SS'), 1);
 INSERT INTO message(sender_id, receiver_id, msg_body, is_displayed, send_date, conversation)
-VALUES (3, 5, 'message text 4', 1, TO_DATE('2017/10/17 18:59:43', 'yyyy/mm/dd HH24:MI:SS'), 2);
+  VALUES (3, 5, 'message text 4', 1, TO_DATE('2017/10/17 18:59:43', 'yyyy/mm/dd HH24:MI:SS'), 2);
 INSERT INTO message(sender_id, receiver_id, msg_body, is_displayed, send_date, conversation)
-VALUES (4, 4, 'message text 5', 0, TO_DATE('2017/10/17 23:11:43', 'yyyy/mm/dd HH24:MI:SS'), 2);
+  VALUES (4, 4, 'message text 5', 0, TO_DATE('2017/10/17 23:11:43', 'yyyy/mm/dd HH24:MI:SS'), 2);
 INSERT INTO message(sender_id, receiver_id, msg_body, is_displayed, send_date, conversation)
-VALUES (4, 2, 'message text 6', 0, TO_DATE('2017/10/15 10:11:59', 'yyyy/mm/dd HH24:MI:SS'), 3);
+  VALUES (4, 2, 'message text 6', 0, TO_DATE('2017/10/15 10:11:59', 'yyyy/mm/dd HH24:MI:SS'), 3);
 INSERT INTO message(sender_id, receiver_id, msg_body, is_displayed, send_date, conversation)
-VALUES (2, 3, 'message text 7', 1, TO_DATE('2017/09/29 23:59:59', 'yyyy/mm/dd HH24:MI:SS'), 4);
+  VALUES (2, 3, 'message text 7', 1, TO_DATE('2017/09/29 23:59:59', 'yyyy/mm/dd HH24:MI:SS'), 4);
 INSERT INTO message(sender_id, receiver_id, msg_body, is_displayed, send_date, conversation)
-VALUES (2, 3, 'message text 8', 1, TO_DATE('2017/10/01 09:09:11', 'yyyy/mm/dd HH24:MI:SS'), 4);
+  VALUES (2, 3, 'message text 8', 1, TO_DATE('2017/10/01 09:09:11', 'yyyy/mm/dd HH24:MI:SS'), 4);
 INSERT INTO message(sender_id, receiver_id, msg_body, is_displayed, send_date, conversation)
-VALUES (4, 5, 'message text 9', 0, TO_DATE('2017/08/15 16:14:41', 'yyyy/mm/dd HH24:MI:SS'), 5);
+  VALUES (4, 5, 'message text 9', 0, TO_DATE('2017/08/15 16:14:41', 'yyyy/mm/dd HH24:MI:SS'), 5);
 INSERT INTO message(sender_id, receiver_id, msg_body, is_displayed, send_date, conversation)
-VALUES (5, 4, 'message text 10', 0, TO_DATE('2017/08/16 17:23:32', 'yyyy/mm/dd HH24:MI:SS'), 5);
+  VALUES (5, 4, 'message text 10', 0, TO_DATE('2017/08/16 17:23:32', 'yyyy/mm/dd HH24:MI:SS'), 5);
 INSERT INTO message(sender_id, receiver_id, msg_body, is_displayed, send_date, conversation)
-VALUES (3, 4, 'message text 11', 1, TO_DATE('2017/07/18 05:07:33', 'yyyy/mm/dd HH24:MI:SS'), 6);
+  VALUES (3, 4, 'message text 11', 1, TO_DATE('2017/07/18 05:07:33', 'yyyy/mm/dd HH24:MI:SS'), 6);
 INSERT INTO message(sender_id, receiver_id, msg_body, is_displayed, send_date, conversation)
-VALUES (2, 4, 'message text 12', 0, TO_DATE('2017/08/16 09:43:54', 'yyyy/mm/dd HH24:MI:SS'), 7);
+  VALUES (2, 4, 'message text 12', 0, TO_DATE('2017/08/16 09:43:54', 'yyyy/mm/dd HH24:MI:SS'), 7);
 
 INSERT INTO offer(offered_date, exchange_date, buyer_id, product_id, rate) VALUES (TO_DATE('2017/11/03 15:33:14', 'yyyy/mm/dd HH24:MI:SS'), NULL, 1, 1, -1);
 INSERT INTO offer(offered_date, exchange_date, buyer_id, product_id, rate) VALUES (TO_DATE('2017/10/18 08:19:11', 'yyyy/mm/dd HH24:MI:SS'), NULL, 4, 5, -1);
@@ -298,37 +319,37 @@ DECLARE
 BEGIN
   utilities.finalize_exchange(2);
 END;
-/
+
 -- po zaladowaniu danych testowych dodaj triggery z automatycznym ustawianiem dat
 CREATE OR REPLACE TRIGGER product_insert_trigger
-  BEFORE INSERT ON product FOR EACH ROW
+BEFORE INSERT ON product FOR EACH ROW
   BEGIN
     SELECT product_seq.nextval INTO :new.id from dual;
     :new.add_date := current_date;
   END;
-/
+
 CREATE OR REPLACE TRIGGER message_insert_trigger
-  BEFORE INSERT ON message FOR EACH ROW
+BEFORE INSERT ON message FOR EACH ROW
   BEGIN
     SELECT message_seq.nextval INTO :new.id from dual;
     :new.send_date := current_date;
   END;
-/
+
 CREATE OR REPLACE TRIGGER offer_insert_trigger
-  BEFORE INSERT ON offer FOR EACH ROW
+BEFORE INSERT ON offer FOR EACH ROW
   BEGIN
     SELECT offer_seq.nextval INTO :new.id from dual;
     :new.offered_date := current_date;
   END;
-/
+
 --propozycja perspektywy - podsumowanie konwersacji, które można wykorzystać przy wyświetlaniu aktualnych rozmów
 create or replace view conversation_heading as
-  select c.id, p.title, p.image_path, p.id as product_id, u.id as sender, u2.id as receiver, m.msg_body, m.send_date, c.sender_deleted, c.receiver_deleted, m.is_displayed
-  from product p, conversation c, users u, users u2, message m
-  where p.id = c.product_id and m.conversation = c.id and u.id = m.sender_id and u2.id = m.receiver_id
-        and m.send_date = (
-    select max(send_date) from message m2 where m2.conversation = c.id
-  );
+select c.id, p.title, p.image_path, p.id as product_id, u.id as sender, u2.id as receiver, m.msg_body, m.send_date, c.sender_deleted, c.receiver_deleted, m.is_displayed
+from product p, conversation c, users u, users u2, message m
+where p.id = c.product_id and m.conversation = c.id and u.id = m.sender_id and u2.id = m.receiver_id
+and m.send_date = (
+  select max(send_date) from message m2 where m2.conversation = c.id
+);
 
 select * from conversation_heading order by id;
 
@@ -337,7 +358,6 @@ create or replace TRIGGER conv_h_update_trigger INSTEAD OF UPDATE on conversatio
   BEGIN
     insert into message(sender_id, receiver_id, msg_body, conversation) VALUES (:new.sender, :new.receiver, :new.msg_body, :old.id);
   END;
-/
 update conversation_heading set sender = 2, receiver = 1, msg_body = 'new message' where id = 1;
 
 -- insert
@@ -345,18 +365,17 @@ create or replace TRIGGER con_h_insert_trigger INSTEAD OF INSERT on conversation
   DECLARE
     next_conv_id conversation.id%TYPE;
   BEGIN
-    insert into conversation(init_sender, init_receiver, product_id) VALUES (:new.sender, :new.receiver, :new.product_id) RETURNING id into next_conv_id;
-    insert into message(sender_id, receiver_id, msg_body, conversation) VALUES (:new.sender, :new.receiver, :new.msg_body, next_conv_id);
+      insert into conversation(init_sender, init_receiver, product_id) VALUES (:new.sender, :new.receiver, :new.product_id) RETURNING id into next_conv_id;
+      insert into message(sender_id, receiver_id, msg_body, conversation) VALUES (:new.sender, :new.receiver, :new.msg_body, next_conv_id);
   END;
-/
 insert into conversation_heading(sender, receiver, msg_body, product_id) values (1,3, 'new message test 1', 2);
 
 -- testowanie usuwania
 DECLARE
-BEGIN
+  BEGIN
   utilities.remove_conversation(8,1);
 END;
-/
+
 --pobranie nieusuniętych rozmów, w których uczestniczy x
 select ch.* from conversation_heading ch where (sender = 1 and sender_deleted = 0) or (receiver = 1 and receiver_deleted = 0);
 select id from conversation_heading where (sender = 1 or receiver =1) and (sender =2 or receiver =2) and product_id = 1;

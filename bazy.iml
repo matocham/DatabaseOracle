@@ -101,8 +101,5 @@
     <orderEntry type="library" name="Maven: org.slf4j:jcl-over-slf4j:1.7.25" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-aspects:4.3.13.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: com.oracle:ojdbc7:12.1.0.1" level="project" />
-    <orderEntry type="library" name="Maven: org.webjars:bootstrap:3.3.7-1" level="project" />
-    <orderEntry type="library" name="Maven: org.webjars:jquery:1.11.1" level="project" />
-    <orderEntry type="library" name="Maven: org.webjars:jquery-validation:1.13.0-1" level="project" />
-  </component>
+   </component>
 </module>

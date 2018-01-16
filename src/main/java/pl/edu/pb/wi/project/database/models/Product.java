@@ -3,6 +3,7 @@ package pl.edu.pb.wi.project.database.models;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Set;
 
 @Entity
 public class Product implements Serializable {
@@ -10,32 +11,33 @@ public class Product implements Serializable {
     @JoinColumn(name = "ID")
     Long id;
 
+    @Column(name = "TITLE")
+    String title;
+
     @ManyToOne(targetEntity = Users.class)
     @JoinColumn(name = "OWNER_ID",referencedColumnName = "ID")
     Users owner;
 
-    @Column(name = "TITLE")
-    String title;
 
     @Column(name = "DESCRIPTION")
     String description;
 
-    @ManyToOne (targetEntity = Category.class)
-    @JoinColumn(name = "CATEGORY_ID", referencedColumnName = "ID")
-    Category category;
+    @ManyToOne(targetEntity = Category.class)
+    @JoinColumn(name = "CATEGORYID")
+    Category categoryId;
 
-    @ManyToOne (targetEntity = Category.class)
-    @JoinColumn(name = "EXCHANGE_FOR",referencedColumnName = "ID")
+    @ManyToOne(targetEntity = Category.class)
+    @JoinColumn(name = "EXCHANGEFOR", referencedColumnName = "ID")
     Category exchangeFor;
 
-    @Column(name = "ADD_DATE")
-    Date addDate;
+    @Column(name = "DATE")
+    Date date;
 
     @Column(name = "EXCHANGED")
     Boolean exchanged;
 
-    @Column(name = "IMAGE_PATH")
-    String imagePath;
+    @Column(name = "IMAGEURL")
+    String imageUrl;
 
     public Long getId() {
         return id;
@@ -45,13 +47,6 @@ public class Product implements Serializable {
         this.id = id;
     }
 
-    public Users getOwner() {
-        return owner;
-    }
-
-    public void setOwner(Users ownerId) {
-        this.owner = ownerId;
-    }
 
     public String getTitle() {
         return title;
@@ -69,12 +64,12 @@ public class Product implements Serializable {
         this.description = description;
     }
 
-    public Category getCategory() {
-        return category;
+    public Category getCategoryId() {
+        return categoryId;
     }
 
-    public void setCategory(Category categoryId) {
-        this.category = categoryId;
+    public void setCategoryId(Category categoryId) {
+        this.categoryId = categoryId;
     }
 
     public Category getExchangeFor() {
@@ -85,12 +80,12 @@ public class Product implements Serializable {
         this.exchangeFor = exchangeFor;
     }
 
-    public Date getAddDate() {
-        return addDate;
+    public Date getDate() {
+        return date;
     }
 
-    public void setAddDate(Date addDate) {
-        this.addDate = addDate;
+    public void setDate(Date date) {
+        this.date = date;
     }
 
     public Boolean getExchanged() {
@@ -98,14 +93,22 @@ public class Product implements Serializable {
     }
 
     public void setExchanged(Boolean exchanged) {
-        this.exchanged = exchanged;
+        exchanged = exchanged;
     }
 
-    public String getImagePath() {
-        return imagePath;
+    public String getImageUrl() {
+        return imageUrl;
     }
 
-    public void setImagePath(String imagePath) {
-        this.imagePath = imagePath;
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public Users getOwner() {
+        return owner;
+    }
+
+    public void setOwner(Users owner) {
+        this.owner = owner;
     }
 }
