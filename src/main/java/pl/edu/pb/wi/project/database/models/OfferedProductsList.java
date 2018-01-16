@@ -3,9 +3,9 @@ package pl.edu.pb.wi.project.database.models;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Set;
-
+@Table(name="OFFERED_PRODUCTS_LIST")
 @Entity
-public class OfferdProductsList implements Serializable {
+public class OfferedProductsList implements Serializable {
 
     @Id
     @ManyToOne(targetEntity = Offer.class)

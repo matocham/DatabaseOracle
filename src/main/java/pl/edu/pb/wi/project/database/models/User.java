@@ -4,6 +4,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 
 @Entity
+@Table(name="Users")
 @NamedStoredProcedureQueries({
         @NamedStoredProcedureQuery(name = "finalize_exchange",
                 procedureName = "utilities.finalize_exchange",
