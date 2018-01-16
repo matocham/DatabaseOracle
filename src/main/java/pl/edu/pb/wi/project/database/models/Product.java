@@ -3,7 +3,6 @@ package pl.edu.pb.wi.project.database.models;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
-import java.util.Set;
 
 @Entity
 public class Product implements Serializable {
@@ -23,20 +22,20 @@ public class Product implements Serializable {
     String description;
 
     @ManyToOne(targetEntity = Category.class)
-    @JoinColumn(name = "CATEGORYID")
-    Category categoryId;
+    @JoinColumn(name = "CATEGORY_ID")
+    Category category;
 
     @ManyToOne(targetEntity = Category.class)
-    @JoinColumn(name = "EXCHANGEFOR", referencedColumnName = "ID")
+    @JoinColumn(name = "EXCHANGE_FOR", referencedColumnName = "ID")
     Category exchangeFor;
 
-    @Column(name = "DATE")
-    Date date;
+    @Column(name = "ADD_DATE")
+    Date addDate;
 
     @Column(name = "EXCHANGED")
     Boolean exchanged;
 
-    @Column(name = "IMAGEURL")
+    @Column(name = "IMAGE_PATH")
     String imageUrl;
 
     public Long getId() {
@@ -64,12 +63,12 @@ public class Product implements Serializable {
         this.description = description;
     }
 
-    public Category getCategoryId() {
-        return categoryId;
+    public Category getCategory() {
+        return category;
     }
 
-    public void setCategoryId(Category categoryId) {
-        this.categoryId = categoryId;
+    public void setCategory(Category category) {
+        this.category = category;
     }
 
     public Category getExchangeFor() {
@@ -80,12 +79,12 @@ public class Product implements Serializable {
         this.exchangeFor = exchangeFor;
     }
 
-    public Date getDate() {
-        return date;
+    public Date getAddDate() {
+        return addDate;
     }
 
-    public void setDate(Date date) {
-        this.date = date;
+    public void setAddDate(Date addDate) {
+        this.addDate = addDate;
     }
 
     public Boolean getExchanged() {

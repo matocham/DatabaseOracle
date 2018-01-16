@@ -15,7 +15,7 @@
                     <div class='row addContainer vertical-align'>
                         <div class='col-md-2 centered'>
                             <a href='#' class='thumbnail autoMargin'>
-                                <img th:src='@{${product.imagePath}}'/>
+                                <img th:src='@{${product.imageUrl}}'/>
                             </a>
                         </div>
                         <div class='col-md-10'>
@@ -26,6 +26,8 @@
                             </div>
                             <div class='h4 echangeFor'>
                                 <b th:text="'Zamieni się za: ' + ${product.exchangeFor.name}"></b>
+                            </div>
+                            <div class='h6 city'><span th:text="'Wystawione przez: ' + ${product.owner.login}"></span>
                             </div>
                             <div class='h6 city'><span th:text="${product.owner.city}"></span>
                             </div>

@@ -24,8 +24,7 @@
                 </div>
             </div>
             <div class="col-md-2 col-md-offset-8 centered" id="loginHolder">
-                <!--<span class="sr-only" id="loggeedAs">Jesteś zalogowany jako</span>
-                <button id="loginButton" class="btn btn-default btn-block">Zaloguj się</button>-->
+                <span th:if="${session != null and session.userId != null}" class="sr-only" id="loggeedAs" th:text="'Witaj, '+${session.user.login}">Witaj, Adamie</span>
             </div>
         </div>
     </div>
