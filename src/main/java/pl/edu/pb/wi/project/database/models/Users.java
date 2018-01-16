@@ -42,6 +42,16 @@ public class Users implements Serializable{
     @Column(name = "ADMIN")
     Boolean admin;
 
+    @PrePersist
+    void PrePersis(){
+        if(premiumUser == null){
+            premiumUser = false;
+        }
+        if(admin == null){
+            admin = false;
+        }
+    };
+
     public Long getId() {
         return id;
     }
