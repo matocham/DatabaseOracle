@@ -28,7 +28,6 @@ public class LoginFilter implements Filter {
             chain.doFilter(request, response);
             return;
         }
-
         if (currentSession != null) {
             Long userId = (Long) currentSession.getAttribute(LoginController.USER_ID_SESSION);
             if (userId == null && !isAllowedPathWithoutLogin(requestPath)) {
@@ -58,6 +57,7 @@ public class LoginFilter implements Filter {
     private boolean isAllowedPathWithoutLogin(String path) {
         List<String> allowedPaths = new ArrayList<>();
         allowedPaths.add("/login");
+        allowedPaths.add("/register");
         for (String authPath : allowedPaths) {
             if (path.contains(authPath)) {
                 return true;
