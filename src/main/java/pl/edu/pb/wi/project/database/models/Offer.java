@@ -1,7 +1,6 @@
 package pl.edu.pb.wi.project.database.models;
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 import java.util.Set;
 import javax.persistence.*;
 @Entity
@@ -13,14 +12,14 @@ public class Offer implements Serializable {
     Long id;
 
     @Column(name="OFFERED_DATE")
-    Date ooferedDate;
+    Date offeredDate;
 
     @Column(name="EXCHANGE_DATE")
     Date exchangeDate;
 
-    @OneToMany (targetEntity = User.class)
+    @OneToMany (targetEntity = Users.class)
     @JoinColumn (name="BUYER_ID",referencedColumnName = "ID")
-    Set<User> buyer;
+    Set<Users> buyer;
 
     @OneToMany (cascade=CascadeType.ALL, targetEntity=Product.class)
     @JoinColumn(name="PRODUCT_ID")
@@ -37,12 +36,12 @@ public class Offer implements Serializable {
         this.id = id;
     }
 
-    public Date getOoferedDate() {
-        return ooferedDate;
+    public Date getOfferedDate() {
+        return offeredDate;
     }
 
-    public void setOoferedDate(Date ooferedDate) {
-        this.ooferedDate = ooferedDate;
+    public void setOfferedDate(Date offeredDate) {
+        this.offeredDate = offeredDate;
     }
 
     public Date getExchangeDate() {
@@ -53,11 +52,11 @@ public class Offer implements Serializable {
         this.exchangeDate = exchangeDate;
     }
 
-    public Set<User> getBuyer() {
+    public Set<Users> getBuyer() {
         return buyer;
     }
 
-    public void setBuyer(Set<User> buyer) {
+    public void setBuyer(Set<Users> buyer) {
         this.buyer = buyer;
     }
 

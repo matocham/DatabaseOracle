@@ -7,8 +7,8 @@ import java.util.Set;
 
 @Entity
 public class Product implements Serializable {
-    @JoinColumn(name = "ID")
     @Id
+    @JoinColumn(name = "ID")
     Long Id;
 
     @Column(name = "TITLE")
@@ -41,6 +41,7 @@ public class Product implements Serializable {
     public void setId(Long id) {
         Id = id;
     }
+
 
     public String getTitle() {
         return title;

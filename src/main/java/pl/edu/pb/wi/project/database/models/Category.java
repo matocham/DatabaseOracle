@@ -6,7 +6,7 @@ import java.io.Serializable;
 public class Category implements Serializable {
     @Id
     @JoinColumn(name = "ID")
-    Long Id;
+    Long id;
 
     @Column(name = "NAME")
     String name;
@@ -16,11 +16,12 @@ public class Category implements Serializable {
     Category parentCategory;
 
     public Long getId() {
-        return Id;
+        return id;
+
     }
 
     public void setId(Long id) {
-        Id = id;
+        this.id = id;
     }
 
     public String getName() {
