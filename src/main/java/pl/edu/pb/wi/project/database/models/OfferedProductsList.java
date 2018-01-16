@@ -3,7 +3,8 @@ package pl.edu.pb.wi.project.database.models;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Set;
-@Table(name="OFFERED_PRODUCTS_LIST")
+
+@Table(name = "OFFERED_PRODUCTS_LIST")
 @Entity
 public class OfferedProductsList implements Serializable {
 
@@ -12,8 +13,9 @@ public class OfferedProductsList implements Serializable {
     @JoinColumn(foreignKey = @ForeignKey(name = "FK_OFFER"))
     Offer offerId;
 
-    @OneToMany(cascade = CascadeType.ALL, targetEntity = Product.class)
-    @JoinColumn(name = "PRODUCTID")
+    @OneToMany(targetEntity = Product.class)
+
+    @JoinColumn(name = "PRODUCTID", foreignKey = @ForeignKey(name = "FK_PRODUCT"))
     Set<Product> productId;
 
     public Offer getOfferId() {

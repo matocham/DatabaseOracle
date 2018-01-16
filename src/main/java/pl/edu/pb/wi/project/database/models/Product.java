@@ -14,22 +14,27 @@ public class Product implements Serializable {
     @Column(name = "TITLE")
     String title;
 
+    @ManyToOne(targetEntity = Users.class)
+    @JoinColumn(name = "OWNER_ID",referencedColumnName = "ID")
+    Users owner;
+
+
     @Column(name = "DESCRIPTION")
     String description;
 
-    @OneToMany(targetEntity = Category.class)
+    @ManyToOne(targetEntity = Category.class)
     @JoinColumn(name = "CATEGORYID")
-    Set<Category> categoryId;
+    Category categoryId;
 
-    @OneToMany(targetEntity = Category.class)
-    @JoinColumn(name = "EXCGANEFOR", referencedColumnName = "ID")
-    Set<Category> exchangeFor;
+    @ManyToOne(targetEntity = Category.class)
+    @JoinColumn(name = "EXCHANGEFOR", referencedColumnName = "ID")
+    Category exchangeFor;
 
     @Column(name = "DATE")
     Date date;
 
-    @Column(name = "ISBOUGHT")
-    Boolean isBought;
+    @Column(name = "EXCHANGED")
+    Boolean exchanged;
 
     @Column(name = "IMAGEURL")
     String imageUrl;
@@ -59,19 +64,19 @@ public class Product implements Serializable {
         this.description = description;
     }
 
-    public Set<Category> getCategoryId() {
+    public Category getCategoryId() {
         return categoryId;
     }
 
-    public void setCategoryId(Set<Category> categoryId) {
+    public void setCategoryId(Category categoryId) {
         this.categoryId = categoryId;
     }
 
-    public Set<Category> getExchangeFor() {
+    public Category getExchangeFor() {
         return exchangeFor;
     }
 
-    public void setExchangeFor(Set<Category> exchangeFor) {
+    public void setExchangeFor(Category exchangeFor) {
         this.exchangeFor = exchangeFor;
     }
 
@@ -83,12 +88,12 @@ public class Product implements Serializable {
         this.date = date;
     }
 
-    public Boolean getBought() {
-        return isBought;
+    public Boolean getExchanged() {
+        return exchanged;
     }
 
-    public void setBought(Boolean bought) {
-        isBought = bought;
+    public void setExchanged(Boolean exchanged) {
+        exchanged = exchanged;
     }
 
     public String getImageUrl() {
