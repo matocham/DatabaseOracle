@@ -107,6 +107,7 @@ CREATE OR REPLACE TRIGGER users_insert_trigger
   BEFORE INSERT ON users FOR EACH ROW
   BEGIN
     SELECT users_seq.nextval INTO :new.id from dual;
+    :new.user_password = utilities.get_hash_val(:new.user_password);
   END;
 /
 CREATE OR REPLACE TRIGGER category_insert_trigger
@@ -150,8 +151,6 @@ AS
   PROCEDURE remove_conversation(conv_id conversation.id%TYPE, user_id users.id%TYPE);
   FUNCTION get_hash_val(p_in VARCHAR2)
     RETURN VARCHAR2;
-  FUNCTION is_suitable_for_exchange(exchanged_product product.id%TYPE, offered_product product.id%TYPE)
-    RETURN INTEGER;
 END;
 /
 CREATE OR REPLACE PACKAGE BODY utilities AS
@@ -201,40 +200,19 @@ CREATE OR REPLACE PACKAGE BODY utilities AS
       l_hash := RAWTOHEX(UTL_RAW.cast_to_raw(DBMS_OBFUSCATION_TOOLKIT.md5(input_string => p_in)));
       RETURN l_hash;
     END;
-
-  FUNCTION is_suitable_for_exchange(exchanged_product product.id%TYPE, offered_product product.id%TYPE)
-    RETURN INTEGER
-  IS
-    exchange_for_c product.exchange_for%TYPE;
-    offered_category category.id%TYPE;
-    cursor categories(root_cat category.id%TYPE) IS select id, name from category START WITH id = root_cat CONNECT BY PRIOR id = parentCategory;
-    BEGIN
-      select exchange_for into exchange_for_c from product where product.id = exchanged_product;
-      select category_id into offered_category from product where product.id = offered_product;
-      for cat in categories(exchange_for_c)
-      LOOP
-        IF cat.id = offered_category THEN
-          RETURN 1;
-        END IF;
-      END LOOP;
-      RETURN 0;
-      EXCEPTION
-      WHEN NO_DATA_FOUND then return 0;
-      when OTHERS THEN raise_application_error(-20005, 'Processing error: ' || sqlerrm);
-    END;
 END;
 /
 -- przykladowe dane
 INSERT INTO users(name, last_name, login, user_password, email, city, premium_user, admin)
-VALUES ('Adam', 'Nowak', 'a_nowak', utilities.get_hash_val('pass1'), 'anowak@examle.com', 'Białystok', 0, 0);
+VALUES ('Adam', 'Nowak', 'a_nowak', 'pass1', 'anowak@examle.com', 'Białystok', 0, 0);
 INSERT INTO users(name, last_name, login, user_password, email, city, premium_user, admin)
-VALUES ('Tomasz', 'Kowalski', 't_kowalski', utilities.get_hash_val('pass2'), 'tkowalski@examle.com', 'Warszawa', 1, 0);
+VALUES ('Tomasz', 'Kowalski', 't_kowalski', 'pass2', 'tkowalski@examle.com', 'Warszawa', 1, 0);
 INSERT INTO users(name, last_name, login, user_password, email, city, premium_user, admin)
-VALUES ('Sebastian', 'Wiśniewski', 's_wisniewski', utilities.get_hash_val('pass3'), 'swisniewski@examle.com', 'Gdańsk', 1, 0);
+VALUES ('Sebastian', 'Wiśniewski', 's_wisniewski', 'pass3', 'swisniewski@examle.com', 'Gdańsk', 1, 0);
 INSERT INTO users(name, last_name, login, user_password, email, city, premium_user, admin)
-VALUES ('Bartosz', 'Brzozowski', 'b_brzozowski', utilities.get_hash_val('pass4'), 'bbrzozowski@examle.com', 'Białystok', 0, 1);
+VALUES ('Bartosz', 'Brzozowski', 'b_brzozowski', 'pass4', 'bbrzozowski@examle.com', 'Białystok', 0, 1);
 INSERT INTO users(name, last_name, login, user_password, email, city, premium_user, admin)
-VALUES ('Konrad', 'Zalewski', 'k_zalewski', utilities.get_hash_val('pass5'), 'kzalewski@examle.com', 'Gdańsk', 0, 0);
+VALUES ('Konrad', 'Zalewski', 'k_zalewski', 'pass5', 'kzalewski@examle.com', 'Gdańsk', 0, 0);
 
 INSERT INTO category(name, parentCategory) VALUES ('elektronika', NULL);
 INSERT INTO category(name, parentCategory) VALUES ('dom i ogród', NULL);
@@ -396,6 +374,3 @@ drop trigger OFFER_INSERT_TRIGGER;
 drop trigger PRODUCT_INSERT_TRIGGER;
 drop trigger USERS_INSERT_TRIGGER;
 drop trigger CATEGORY_INSERT_TRIGGER;
-
-
-select * from product where id=3 and utilities.is_suitable_for_exchange(id,10) = 1;

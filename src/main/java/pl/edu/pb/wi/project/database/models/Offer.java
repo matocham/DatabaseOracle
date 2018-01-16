@@ -3,7 +3,15 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
 import javax.persistence.*;
+
 @Entity
+@NamedStoredProcedureQueries({
+        @NamedStoredProcedureQuery(name = "finalize_exchange",
+                procedureName = "utilities.finalize_exchange",
+                parameters = {
+                        @StoredProcedureParameter(mode = ParameterMode.IN, name = "offer_id", type = Long.class)
+                })
+})
 public class Offer implements Serializable {
 
     @JoinColumn(name="ID")

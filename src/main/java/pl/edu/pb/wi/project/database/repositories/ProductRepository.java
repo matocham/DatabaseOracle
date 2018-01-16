@@ -8,8 +8,10 @@ import java.util.List;
 
 public interface ProductRepository extends CrudRepository<Product, Long> {
 
-    List<Product> findByCategoryId(Long catId);
-
-    @Query(value = "SELECT * FROM PRODUCT WHERE category_id in (select id from category START WITH id = ?1 CONNECT BY PRIOR id = parentCategory)", nativeQuery = true)
+    @Query(value = "SELECT * FROM PRODUCT WHERE exchanged = 0 and category_id in (select id from category START WITH id = ?1 CONNECT BY PRIOR id = parentCategory)", nativeQuery = true)
     List<Product> findByCategoryTree(Long startingId);
+
+    List<Product> findByOwnerId(Long id);
+
+    List<Product> findByOwnerIdAndExchanged(Long id, Boolean exchanged);
 }

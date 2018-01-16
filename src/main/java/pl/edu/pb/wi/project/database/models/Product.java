@@ -8,7 +8,7 @@ import java.util.Date;
 public class Product implements Serializable {
     @Id
     @JoinColumn(name = "ID")
-    Long Id;
+    Long id;
 
     @ManyToOne(targetEntity = Users.class)
     @JoinColumn(name = "OWNER_ID",referencedColumnName = "ID")
@@ -38,11 +38,11 @@ public class Product implements Serializable {
     String imagePath;
 
     public Long getId() {
-        return Id;
+        return id;
     }
 
     public void setId(Long id) {
-        Id = id;
+        this.id = id;
     }
 
     public Users getOwner() {
