@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="base :: pageHead">
+</head>
+<body>
+<div class="container-fluid">
+    <div th:replace="base :: header"></div>
+    <div class="row">
+        <div th:replace="base :: leftCol"></div>
+        <div class="col-md-8 categories">
+            <h2>Ogłoszenia</h2>
+            <!--<div class="loader box" id="catLoader"></div>-->
+            <div id="addverts">
+                <div class='panel panel-default' th:each="product : ${products}">
+                    <div class='row addContainer vertical-align'>
+                        <div class='col-md-2 centered'>
+                            <a href='#' class='thumbnail autoMargin'>
+                                <img th:src='@{${product.imageUrl}}'/>
+                            </a>
+                        </div>
+                        <div class='col-md-10'>
+                            <div class='h3 addHeader'>
+                                <a href='#' th:text="${product.title}"></a>
+                            </div>
+                            <div class='h6 fromCategory' th:text="'Z kategorii: ' + ${product.category.name}">
+                            </div>
+                            <div class='h4 echangeFor'>
+                                <b th:text="'Zamieni się za: ' + ${product.exchangeFor.name}"></b>
+                            </div>
+                            <div class='h6 city'><span th:text="'Wystawione przez: ' + ${product.owner.login}"></span>
+                            </div>
+                            <div class='h6 city'><span th:text="${product.owner.city}"></span>
+                            </div>
+                            <div class='h6 addedDate' th:inline="text"><b>Dodano</b>&nbsp;[[${#dates.format(product.addDate,
+                                'dd-MM-yyyy')}]]
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                ";
+            </div>
+            <!-- <p id="noItems" class="bg-danger has-error noResults">
+                 <br/>Brak ogłoszeń w kategorii<br/><br/>
+             </p>-->
+        </div>
+    </div>
+</div>
+</body>
+</html>

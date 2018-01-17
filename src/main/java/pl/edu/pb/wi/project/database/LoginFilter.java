@@ -58,6 +58,8 @@ public class LoginFilter implements Filter {
     private boolean isAllowedPathWithoutLogin(String path) {
         List<String> allowedPaths = new ArrayList<>();
         allowedPaths.add("/login");
+        allowedPaths.add("/register");
+        allowedPaths.add("/newOffer");
         for (String authPath : allowedPaths) {
             if (path.contains(authPath)) {
                 return true;
@@ -72,6 +74,7 @@ public class LoginFilter implements Filter {
     private boolean isForbiddenAfterLogin(String path) {
         List<String> allowedPaths = new ArrayList<>();
         allowedPaths.add("/login");
+        allowedPaths.add("/register");
         for (String authPath : allowedPaths) {
             if (path.contains(authPath)) {
                 return true;

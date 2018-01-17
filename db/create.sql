@@ -1,4 +1,4 @@
---Stworzenie tabel
+﻿--Stworzenie tabel
 CREATE TABLE users (
   id            NUMBER CONSTRAINT user_pk PRIMARY KEY,
   name          VARCHAR2(50),
@@ -77,7 +77,17 @@ CREATE SEQUENCE product_seq MINVALUE 1 NOMAXVALUE START WITH 1 INCREMENT BY 1 NO
 CREATE SEQUENCE conversation_seq MINVALUE 1 NOMAXVALUE START WITH 1 INCREMENT BY 1 NOCACHE;
 CREATE SEQUENCE message_seq MINVALUE 1 NOMAXVALUE START WITH 1 INCREMENT BY 1 NOCACHE;
 CREATE SEQUENCE offer_seq MINVALUE 1 NOMAXVALUE START WITH 1 INCREMENT BY 1 NOCACHE;
+commit;
 
+--stworzenie procedur i funkcji w paczce
+CREATE OR REPLACE PACKAGE utilities
+AS
+  PROCEDURE finalize_exchange(offer_id offer.id%TYPE);
+  PROCEDURE remove_conversation(conv_id conversation.id%TYPE, user_id users.id%TYPE);
+  FUNCTION get_hash_val(p_in VARCHAR2)
+    RETURN VARCHAR2;
+END;
+/
 --stworzenie triggerów do autoincrement
 CREATE OR REPLACE TRIGGER users_insert_trigger
   BEFORE INSERT ON users FOR EACH ROW
@@ -121,14 +131,7 @@ CREATE OR REPLACE TRIGGER offer_insert_trigger
 /
 
 --stworzenie procedur i funkcji w paczce
-CREATE OR REPLACE PACKAGE utilities
-AS
-  PROCEDURE finalize_exchange(offer_id offer.id%TYPE);
-  PROCEDURE remove_conversation(conv_id conversation.id%TYPE, user_id users.id%TYPE);
-  FUNCTION get_hash_val(p_in VARCHAR2)
-    RETURN VARCHAR2;
-END;
-/
+
 CREATE OR REPLACE PACKAGE BODY utilities AS
   PROCEDURE finalize_exchange(offer_id offer.id%TYPE)
   AS
