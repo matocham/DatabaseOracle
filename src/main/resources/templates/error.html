@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="pageHead">
+    <meta charset="UTF-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Barter-pro</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/3.3.7-1/css/bootstrap.min.css}"></link>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/site.css}"></link>
+    <script type="application/javascript" th:src="@{/js/utils.js}"></script>
+    <script type="application/javascript" th:src="@{/webjars/jquery/1.11.1/jquery.min.js}"></script>
+    <script type="application/javascript" th:src="@{/webjars/bootstrap/3.3.7-1/js/bootstrap.min.js}"></script>
+</head>
+<body>
+<div class="container-fluid">
+    <div th:replace="base :: header"></div>
+    <div class="row">
+        <div th:replace="base :: leftCol"></div>
+
+        Strona nie istnieje error:404!
+    </div>
+</div>
+</body>
+</html>

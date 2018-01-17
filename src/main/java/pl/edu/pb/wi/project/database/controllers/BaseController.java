@@ -26,4 +26,5 @@ public class BaseController {
         model.addAttribute("products", productsFromCategory);
         return "category";
     }
+
 }

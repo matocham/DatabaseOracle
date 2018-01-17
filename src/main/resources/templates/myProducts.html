@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="base :: pageHead">
+<head th:fragment="pageHead">
+    <meta charset="UTF-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Barter-pro</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/3.3.7-1/css/bootstrap.min.css}"></link>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/site.css}"></link>
+    <script type="application/javascript" th:src="@{/js/utils.js}"></script>
+    <script type="application/javascript" th:src="@{/webjars/jquery/1.11.1/jquery.min.js}"></script>
+    <script type="application/javascript" th:src="@{/webjars/bootstrap/3.3.7-1/js/bootstrap.min.js}"></script>
 </head>
 <body>
 <div class="container-fluid">
@@ -8,10 +17,13 @@
     <div class="row">
         <div th:replace="base :: leftCol"></div>
         <div class="col-md-8 categories">
-            <h2>Ogłoszenia</h2>
+            <a class="btn btn-default" th:href="@{/addOffer}">Dodaj Ofertę</a>
+            <a class="btn btn-default" th:href="@{/addOffer}">Dodaj Produkt</a>
+            <h2>Twoje przedmioty</h2>
             <!--<div class="loader box" id="catLoader"></div>-->
-            <div id="addverts">
-                <div class='panel panel-default' th:each="product : ${products}">
+
+                    <div id="addverts">
+                <div class='panel panel-default' th:each="product : ${myProducts}">
                     <div class='row addContainer vertical-align'>
                         <div class='col-md-2 centered'>
                             <a href='#' class='thumbnail autoMargin'>
@@ -22,7 +34,7 @@
                             <div class='h3 addHeader'>
                                 <a href='#' th:text="${product.title}"></a>
                             </div>
-                            <div class='h6 fromCategory' th:text="'Z kategorii: ' + ${product.category.name}">
+                            <div class='h6 fromCategory' th:text="'Z kategorii: ' + ${product.category.name}" >
                             </div>
                             <div class='h4 echangeFor'>
                                 <b th:text="'Zamieni się za: ' + ${product.exchangeFor.name}"></b>
@@ -31,13 +43,13 @@
                             </div>
                             <div class='h6 city'><span th:text="${product.owner.city}"></span>
                             </div>
-                            <div class='h6 addedDate' th:inline="text"><b>Dodano</b>&nbsp;[[${#dates.format(product.addDate,
-                                'dd-MM-yyyy')}]]
-                            </div>
+                            <div class='h6 addedDate' th:inline="text"><b>Dodano</b>&nbsp;[[${#dates.format(product.addDate, 'dd-MM-yyyy')}]]</div>
+
                         </div>
+
                     </div>
                 </div>
-                ";
+
             </div>
             <!-- <p id="noItems" class="bg-danger has-error noResults">
                  <br/>Brak ogłoszeń w kategorii<br/><br/>
