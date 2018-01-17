@@ -28,7 +28,6 @@ public class LoginFilter implements Filter {
             chain.doFilter(request, response);
             return;
         }
-
         if (currentSession != null) {
             Long userId = (Long) currentSession.getAttribute(LoginController.USER_ID_SESSION);
             if (userId == null && !isAllowedPathWithoutLogin(requestPath)) {
