@@ -14,13 +14,13 @@
                 <div class='panel panel-default' th:each="product : ${products}">
                     <div class='row addContainer vertical-align'>
                         <div class='col-md-2 centered'>
-                            <a href='#' class='thumbnail autoMargin'>
+                            <a th:href="@{product/{id}(id=${product.id})}" class='thumbnail autoMargin'>
                                 <img th:src='@{${product.imageUrl}}'/>
                             </a>
                         </div>
                         <div class='col-md-10'>
                             <div class='h3 addHeader'>
-                                <a href='#' th:text="${product.title}"></a>
+                                <a th:href="@{product/{id}(id=${product.id})}" th:text="${product.title}"></a>
                             </div>
                             <div class='h6 fromCategory' th:text="'Z kategorii: ' + ${product.category.name}" >
                             </div>
