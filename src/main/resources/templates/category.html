@@ -43,9 +43,9 @@
                 </div>
                 ";
             </div>
-            <!-- <p id="noItems" class="bg-danger has-error noResults">
+             <p th:if="${products == null or #lists.isEmpty(products)}" id="noItems" class="bg-danger has-error noResults">
                  <br/>Brak ogłoszeń w kategorii<br/><br/>
-             </p>-->
+             </p>
         </div>
     </div>
 </div>

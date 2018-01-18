@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import pl.edu.pb.wi.project.database.models.Offer;
@@ -60,9 +61,29 @@ public class BaseController {
         }
         if (offer.getBuyer().getId().equals(sessionUserId)) {
             return "showMyOffer";
-        } else if (offer.getOfferedProducts().get(0).getOwner().getId().equals(sessionUserId)) {
+        } else if (offer.getProduct().getOwner().getId().equals(sessionUserId)) {
             return "showIncomingOffer";
         }
-        return "redirect:/index";
+        return "redirect:/";
+    }
+
+    @PostMapping("/offer/{id}/accept")
+    String acceptOffer(@PathVariable(name = "id") Long id, HttpSession session) {
+        Offer offer = offerRepository.findOne(id);
+        if (offer == null) {
+            return "redirect:/";
+        }
+        Long sessionUserId = (Long) session.getAttribute(LoginController.USER_ID_SESSION);
+
+        if (sessionUserId == null) {
+            return "redirect:/login";
+        }
+        if (offer.getBuyer().getId().equals(sessionUserId)) {
+            return "redirect:/";
+        } else if (offer.getOfferedProducts().get(0).getOwner().getId().equals(sessionUserId)) {
+            offerRepository.finalizeExchange(id);
+            return "offerAccepted";
+        }
+        return "redirect:/";
     }
 }

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="base :: pageHead">
+</head>
+<body>
+<div class="container-fluid">
+    <div th:replace="base :: header"></div>
+    <div class="row">
+        <div th:replace="base :: leftCol"></div>
+        <div class="col-md-8 categories">
+            <h2>Oferta została zaakceptowana</h2>
+            <a th:href="@{/}">Do strony głównej</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

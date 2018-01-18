@@ -144,6 +144,19 @@ CREATE OR REPLACE PACKAGE BODY utilities AS
         SELECT product_id FROM offered_products_list WHERE offer_id = v_offer.id
       );
       UPDATE offer SET exchange_date = current_date WHERE id = v_offer.id;
+
+      DELETE from offer
+        where (product_id in
+                (SELECT product_id FROM offered_products_list WHERE offer_id = v_offer.id)
+          or product_id = v_offer.product_id)
+          and id != v_offer.id;
+      DELETE from offered_products_list
+        where (product_id = v_offer.product_id
+              or product_id in
+              (SELECT product_id FROM offered_products_list WHERE offer_id = v_offer.id))
+              and offer_id != v_offer.id;
+
+      DELETE from offer where not exists (select 1 from offered_products_list where offer_id = offer.id);
       COMMIT;
       EXCEPTION
       WHEN NO_DATA_FOUND THEN

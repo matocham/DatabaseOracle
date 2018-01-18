@@ -24,7 +24,7 @@ public class LoginFilter implements Filter {
         HttpSession currentSession = trueRequest.getSession(false);
         String requestPath = trueRequest.getServletPath();
 
-        if(requestPath.startsWith("/css/") || requestPath.startsWith("/js/") || requestPath.startsWith("/image/") || requestPath.startsWith("/webjars/")){
+        if(requestPath.startsWith("/css/") || requestPath.startsWith("/js/") || requestPath.startsWith("/images/") || requestPath.startsWith("/webjars/")){
             chain.doFilter(request, response);
             return;
         }
