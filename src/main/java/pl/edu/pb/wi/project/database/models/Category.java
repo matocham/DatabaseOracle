@@ -1,4 +1,6 @@
 package pl.edu.pb.wi.project.database.models;
+import org.hibernate.annotations.GenericGenerator;
+
 import javax.persistence.*;
 import java.io.Serializable;
 
@@ -6,6 +8,8 @@ import java.io.Serializable;
 public class Category implements Serializable {
     @Id
     @JoinColumn(name = "ID")
+    @GeneratedValue(generator = "increment")
+    @GenericGenerator(name = "increment", strategy = "increment")
     Long id;
 
     @Column(name = "NAME")

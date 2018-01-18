@@ -11,7 +11,7 @@
             <h1 th:text="${product.title}">Title</h1>
             <div class="row">
                 <div th:if="${product.imageUrl}" class="col-md-4" >
-                    <img src="#" class="img-responsive" th:src="${product.imageUrl}" id="images" alt="image to place"/>
+                    <img src="#" class="img-responsive" th:src="@{/external/{path}(path=${product.imageUrl})}" id="images" alt="image to place"/>
                 </div>
                 <div th:unless="${product.imageUrl}" class="col-md-4" id="image-blank">
                     <img class="img-responsive" src="#" th:src="@{/images/noimage.png}"

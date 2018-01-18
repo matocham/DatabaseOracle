@@ -215,29 +215,29 @@ INSERT INTO category(name, parentCategory) VALUES ('telefony', 1);
 INSERT INTO category(name, parentCategory) VALUES ('motoryzacja', NULL);
 
 INSERT INTO product(owner_id, title, description, category_id, exchange_for, add_date, exchanged, image_path)
-VALUES (2, 'root', 'description examle 1', 1, 1, TO_DATE('2017/11/01', 'yyyy/mm/dd'), 0, '/images/product/1/1');
+VALUES (2, 'root', 'description examle 1', 1, 1, TO_DATE('2017/11/01', 'yyyy/mm/dd'), 0, 'images/product/1/1');
 INSERT INTO product(owner_id, title, description, category_id, exchange_for, add_date, exchanged, image_path)
-VALUES (5, 'elekronika', 'description examle 2', 1, 2, TO_DATE('2017/10/15', 'yyyy/mm/dd'), 0, '/images/product/2/2');
+VALUES (5, 'elekronika', 'description examle 2', 1, 2, TO_DATE('2017/10/15', 'yyyy/mm/dd'), 0, 'images/product/2/2');
 INSERT INTO product(owner_id, title, description, category_id, exchange_for, add_date, exchanged, image_path)
-VALUES (2, 'elektronika 2', 'description examle 3', 2, 3, TO_DATE('2017/10/11', 'yyyy/mm/dd'), 0, '/images/product/3/3');
+VALUES (2, 'elektronika 2', 'description examle 3', 2, 3, TO_DATE('2017/10/11', 'yyyy/mm/dd'), 0, 'images/product/3/3');
 INSERT INTO product(owner_id, title, description, category_id, exchange_for, add_date, exchanged, image_path)
-VALUES (3, 'dom i ogród', 'description examle 4', 2, 4, TO_DATE('2017/09/20', 'yyyy/mm/dd'), 0, '/images/product/4/4');
+VALUES (3, 'dom i ogród', 'description examle 4', 2, 4, TO_DATE('2017/09/20', 'yyyy/mm/dd'), 0, 'images/product/4/4');
 INSERT INTO product(owner_id, title, description, category_id, exchange_for, add_date, exchanged, image_path)
-VALUES (5, 'motoryzacja', 'description examle 5', 7, 3, TO_DATE('2017/08/11', 'yyyy/mm/dd'), 0, '/images/product/5/5');
+VALUES (5, 'motoryzacja', 'description examle 5', 7, 3, TO_DATE('2017/08/11', 'yyyy/mm/dd'), 0, 'images/product/5/5');
 INSERT INTO product(owner_id, title, description, category_id, exchange_for, add_date, exchanged, image_path)
-VALUES (4, 'komputery stacjonarne', 'description examle 6', 4, 2, TO_DATE('2017/07/11', 'yyyy/mm/dd'), 0, '/images/product/6/6');
+VALUES (4, 'komputery stacjonarne', 'description examle 6', 4, 2, TO_DATE('2017/07/11', 'yyyy/mm/dd'), 0, 'images/product/6/6');
 INSERT INTO product(owner_id, title, description, category_id, exchange_for, add_date, exchanged, image_path)
-VALUES (4, 'laptopy', 'description examle 7', 5, 7, TO_DATE('2017/06/01', 'yyyy/mm/dd'), 1, '/images/product/7/7');
+VALUES (4, 'laptopy', 'description examle 7', 5, 7, TO_DATE('2017/06/01', 'yyyy/mm/dd'), 1, 'images/product/7/7');
 INSERT INTO product(owner_id, title, description, category_id, exchange_for, add_date, exchanged, image_path)
-VALUES (1, 'telefony', 'description examle 8', 6, 1, TO_DATE('2017/10/24', 'yyyy/mm/dd'), 0, '/images/product/8/8');
+VALUES (1, 'telefony', 'description examle 8', 6, 1, TO_DATE('2017/10/24', 'yyyy/mm/dd'), 0, 'images/product/8/8');
 INSERT INTO product(owner_id, title, description, category_id, exchange_for, add_date, exchanged, image_path)
-VALUES (1, 'motoryzacja 2', 'description examle 9', 7, 1, TO_DATE('2017/10/05', 'yyyy/mm/dd'), 0, '/images/product/9/9');
+VALUES (1, 'motoryzacja 2', 'description examle 9', 7, 1, TO_DATE('2017/10/05', 'yyyy/mm/dd'), 0, 'images/product/9/9');
 INSERT INTO product(owner_id, title, description, category_id, exchange_for, add_date, exchanged, image_path)
-VALUES (4, 'stacjonarne 2', 'description examle 10', 4, 7, TO_DATE('2017/07/22', 'yyyy/mm/dd'), 0, '/images/product/10/10');
+VALUES (4, 'stacjonarne 2', 'description examle 10', 4, 7, TO_DATE('2017/07/22', 'yyyy/mm/dd'), 0, 'images/product/10/10');
 INSERT INTO product(owner_id, title, description, category_id, exchange_for, add_date, exchanged, image_path)
-VALUES (3, 'motoryzacja 3', 'description examle 11', 7, 5, TO_DATE('2017/05/22', 'yyyy/mm/dd'), 1, '/images/product/11/11');
+VALUES (3, 'motoryzacja 3', 'description examle 11', 7, 5, TO_DATE('2017/05/22', 'yyyy/mm/dd'), 1, 'images/product/11/11');
 INSERT INTO product(owner_id, title, description, category_id, exchange_for, add_date, exchanged, image_path)
-VALUES (2, 'stacjonarne 3', 'description examle 12', 4, 2, TO_DATE('2017/05/22', 'yyyy/mm/dd'), 0, '/images/product/12/12');
+VALUES (2, 'stacjonarne 3', 'description examle 12', 4, 2, TO_DATE('2017/05/22', 'yyyy/mm/dd'), 0, 'images/product/12/12');
 
 INSERT INTO conversation(init_sender, init_receiver, product_id, sender_deleted, receiver_deleted) VALUES (1, 2, 1, 0, 0);
 INSERT INTO conversation(init_sender, init_receiver, product_id, sender_deleted, receiver_deleted) VALUES (4, 5, 2, 0, 0);
@@ -332,3 +332,4 @@ create or replace TRIGGER con_h_insert_trigger INSTEAD OF INSERT on conversation
   END;
 
 /
+commit;

@@ -1,5 +1,7 @@
 package pl.edu.pb.wi.project.database.models;
 
+import org.hibernate.annotations.GenericGenerator;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
@@ -8,13 +10,15 @@ import java.util.Date;
 public class Product implements Serializable {
     @Id
     @JoinColumn(name = "ID")
+    @GeneratedValue(generator = "increment")
+    @GenericGenerator(name = "increment", strategy = "increment")
     Long id;
 
     @Column(name = "TITLE")
     String title;
 
     @ManyToOne(targetEntity = Users.class)
-    @JoinColumn(name = "OWNER_ID",referencedColumnName = "ID")
+    @JoinColumn(name = "OWNER_ID", referencedColumnName = "ID")
     Users owner;
 
 
@@ -33,7 +37,7 @@ public class Product implements Serializable {
     Date addDate;
 
     @Column(name = "EXCHANGED")
-    Boolean exchanged;
+    boolean exchanged;
 
     @Column(name = "IMAGE_PATH")
     String imageUrl;
@@ -87,11 +91,11 @@ public class Product implements Serializable {
         this.addDate = addDate;
     }
 
-    public Boolean getExchanged() {
+    public boolean getExchanged() {
         return exchanged;
     }
 
-    public void setExchanged(Boolean exchanged) {
+    public void setExchanged(boolean exchanged) {
         exchanged = exchanged;
     }
 

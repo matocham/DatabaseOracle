@@ -1,5 +1,7 @@
 package pl.edu.pb.wi.project.database.models;
 
+import org.hibernate.annotations.GenericGenerator;
+
 import javax.persistence.*;
 
 import java.io.Serializable;
@@ -9,6 +11,8 @@ import java.util.Date;
 public class Message implements Serializable {
     @Id
     @Column(name = "ID")
+    @GeneratedValue(generator = "increment")
+    @GenericGenerator(name = "increment", strategy = "increment")
     Long Id;
 
     @ManyToOne(targetEntity = Users.class)

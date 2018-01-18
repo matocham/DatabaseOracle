@@ -52,7 +52,7 @@
                     <div class='row addContainer vertical-align'>
                         <div class='col-md-2 centered'>
                             <a th:href="@{product/{id}(id=${product.id})}" class='thumbnail autoMargin'>
-                                <img th:src='@{${product.imageUrl}}'/>
+                                <img th:src='@{/external/{path}(path=${product.imageUrl})}'/>
                             </a>
                         </div>
                         <div class='col-md-10'>
