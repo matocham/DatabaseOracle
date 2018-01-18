@@ -80,7 +80,7 @@ public class BaseController {
         }
         if (offer.getBuyer().getId().equals(sessionUserId)) {
             return "redirect:/";
-        } else if (offer.getOfferedProducts().get(0).getOwner().getId().equals(sessionUserId)) {
+        } else if (offer.getProduct().getOwner().getId().equals(sessionUserId)) {
             offerRepository.finalizeExchange(id);
             return "offerAccepted";
         }

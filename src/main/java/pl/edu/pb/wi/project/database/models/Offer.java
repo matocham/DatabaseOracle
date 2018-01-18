@@ -8,6 +8,13 @@ import java.util.Set;
 
 @Entity
 @Table(name = "OFFER")
+@NamedStoredProcedureQueries({
+        @NamedStoredProcedureQuery(name = "finalize_exchange",
+                procedureName = "utilities.finalize_exchange",
+                parameters = {
+                        @StoredProcedureParameter(mode = ParameterMode.IN, name = "offer_id", type = Long.class)
+                })
+})
 public class Offer implements Serializable {
 
     @JoinColumn(name = "ID")
