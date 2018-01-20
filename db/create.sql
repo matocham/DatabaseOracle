@@ -308,10 +308,10 @@ CREATE OR REPLACE TRIGGER offer_insert_trigger
 /
 --propozycja perspektywy - podsumowanie konwersacji, które można wykorzystać przy wyświetlaniu aktualnych rozmów
 create or replace view conversation_heading as
-  select c.id, p.title, p.image_path, p.id as product_id, u.id as sender, u2.id as receiver, m.msg_body, m.send_date, c.sender_deleted, c.receiver_deleted, m.is_displayed
-  from product p, conversation c, users u, users u2, message m
-  where p.id = c.product_id and m.conversation = c.id and u.id = m.sender_id and u2.id = m.receiver_id
-        and m.send_date = (
+  select c.id, p.title, p.image_path, p.id as product_id, sender_id as sender, m.receiver_id as receiver, m.msg_body, m.send_date,
+    c.sender_deleted, c.receiver_deleted, m.is_displayed
+  from product p, conversation c, message m
+  where p.id = c.product_id and m.conversation = c.id and m.send_date = (
     select max(send_date) from message m2 where m2.conversation = c.id
   );
 
@@ -322,6 +322,7 @@ create or replace TRIGGER conv_h_update_trigger INSTEAD OF UPDATE on conversatio
   END;
 /
 
+select * from conversation_heading;
 -- insert
 create or replace TRIGGER con_h_insert_trigger INSTEAD OF INSERT on conversation_heading
   DECLARE
