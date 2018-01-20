@@ -70,7 +70,7 @@ CREATE TABLE offered_products_list (
   CONSTRAINT offered_pl_pk PRIMARY KEY (offer_id, product_id)
 );
 
---stworzenie sekwencji
+--Sekewencje inkrementujące id tabel
 CREATE SEQUENCE users_seq MINVALUE 1 NOMAXVALUE START WITH 1 INCREMENT BY 1 NOCACHE;
 CREATE SEQUENCE category_seq MINVALUE 1 NOMAXVALUE START WITH 1 INCREMENT BY 1 NOCACHE;
 CREATE SEQUENCE product_seq MINVALUE 1 NOMAXVALUE START WITH 1 INCREMENT BY 1 NOCACHE;
@@ -79,16 +79,7 @@ CREATE SEQUENCE message_seq MINVALUE 1 NOMAXVALUE START WITH 1 INCREMENT BY 1 NO
 CREATE SEQUENCE offer_seq MINVALUE 1 NOMAXVALUE START WITH 1 INCREMENT BY 1 NOCACHE;
 commit;
 
---stworzenie procedur i funkcji w paczce
-CREATE OR REPLACE PACKAGE utilities
-AS
-  PROCEDURE finalize_exchange(offer_id offer.id%TYPE);
-  PROCEDURE remove_conversation(conv_id conversation.id%TYPE, user_id users.id%TYPE);
-  FUNCTION get_hash_val(p_in VARCHAR2)
-    RETURN VARCHAR2;
-END;
-/
---stworzenie triggerów do autoincrement
+--stworzenie triggerów do autoincrement i tigger has-ującego hasło użytkownika
 CREATE OR REPLACE TRIGGER users_insert_trigger
   BEFORE INSERT ON users FOR EACH ROW
   BEGIN
@@ -108,7 +99,7 @@ CREATE OR REPLACE TRIGGER product_insert_trigger
     SELECT product_seq.nextval INTO :new.id from dual;
     --:new.add_date := current_date;
   END;
-
+/
 CREATE OR REPLACE TRIGGER conversation_insert_trigger
   BEFORE INSERT ON conversation FOR EACH ROW
   BEGIN
@@ -130,8 +121,24 @@ CREATE OR REPLACE TRIGGER offer_insert_trigger
   END;
 /
 
---stworzenie procedur i funkcji w paczce
 
+-- Paczka
+CREATE OR REPLACE PACKAGE utilities
+AS
+  PROCEDURE finalize_exchange(offer_id offer.id%TYPE);
+  PROCEDURE remove_conversation(conv_id conversation.id%TYPE, user_id users.id%TYPE);
+  FUNCTION get_hash_val(p_in VARCHAR2)
+    RETURN VARCHAR2;
+END;
+/
+
+--Procedury i funkcje do
+--Zakończenie wymiany
+--PROCEDURE finalize_exchange(offer_id offer.id%TYPE)
+--Usunięcie konwersacji/rozmowy
+--PROCEDURE remove_conversation(conv_id conversation.id%TYPE, user_id users.id%TYPE)
+--Funkcja do hash-owania rekordów np. haseł użytkowników
+--FUNCTION get_hash_val(p_in VARCHAR2)
 CREATE OR REPLACE PACKAGE BODY utilities AS
   PROCEDURE finalize_exchange(offer_id offer.id%TYPE)
   AS
@@ -195,7 +202,8 @@ CREATE OR REPLACE PACKAGE BODY utilities AS
 END;
 /
 
--- po zaladowaniu danych testowych dodaj triggery z automatycznym ustawianiem dat
+-- Tiggery do automatycznego wstawiania daty
+-- Tiggery należy dodać po załadowaniu dannych testowych
 CREATE OR REPLACE TRIGGER product_insert_trigger
   BEFORE INSERT ON product FOR EACH ROW
   BEGIN
@@ -217,32 +225,3 @@ CREATE OR REPLACE TRIGGER offer_insert_trigger
     :new.offered_date := current_date;
   END;
 /
-
---propozycja perspektywy - podsumowanie konwersacji, które można wykorzystać przy wyświetlaniu aktualnych rozmów
-create or replace view conversation_heading as
-  select c.id, p.title, p.image_path, p.id as product_id, sender_id as sender, m.receiver_id as receiver, m.msg_body, m.send_date,
-    c.sender_deleted, c.receiver_deleted, m.is_displayed
-  from product p, conversation c, message m
-  where p.id = c.product_id and m.conversation = c.id and m.send_date = (
-    select max(send_date) from message m2 where m2.conversation = c.id
-  );
-
--- update
-create or replace TRIGGER conv_h_update_trigger INSTEAD OF UPDATE on conversation_heading
-  BEGIN
-    insert into message(sender_id, receiver_id, msg_body, conversation) VALUES (:new.sender, :new.receiver, :new.msg_body, :old.id);
-  END;
-/
-
-select * from conversation_heading;
--- insert
-create or replace TRIGGER con_h_insert_trigger INSTEAD OF INSERT on conversation_heading
-  DECLARE
-    next_conv_id conversation.id%TYPE;
-  BEGIN
-    insert into conversation(init_sender, init_receiver, product_id) VALUES (:new.sender, :new.receiver, :new.product_id) RETURNING id into next_conv_id;
-    insert into message(sender_id, receiver_id, msg_body, conversation) VALUES (:new.sender, :new.receiver, :new.msg_body, next_conv_id);
-  END;
-
-/
-commit;

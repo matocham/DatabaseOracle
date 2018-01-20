@@ -59,6 +59,7 @@ public class LoginFilter implements Filter {
         allowedPaths.add("/login");
         allowedPaths.add("/register");
         allowedPaths.add("/newOffer");
+        allowedPaths.add("/offered");
         for (String authPath : allowedPaths) {
             if (path.contains(authPath)) {
                 return true;
