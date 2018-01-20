@@ -37,6 +37,12 @@
             <div class="col-md-6 centered justFelexEnd">
                 <div th:if="${session != null and session.userId != null}">
                     <div id="loginHolder" class="flexAlignedCenter">
+                        <form id="userOffersForm" class="form-inline" action="/userOffers" method="get">
+                            <div class="form-group">
+                                <label for="offerSearch">Offers user: </label><input id="offerSearch" type="text" name="login" value="t_kowalski" />
+                            </div>
+                        </form>
+                        <button class="btn btn-default btn-block" form="userOffersForm" type="submit">Show</button>
                         <a class="btn btn-default btn-block" style="margin-top: 5px" th:href="@{/item/add}">Moje Oferty</a>
                         <a class="btn btn-default btn-block" th:href="@{/myProducts}">Moje Produkty</a>
                         <span id="loggeedAs" th:text="'Witaj, '+${session.user.login}"></span>

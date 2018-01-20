@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="baseNoCategories :: pageHead">
+</head>
+<body>
+    <div class="container-fluid">
+        <div th:replace="base :: header"></div>
+        <div>
+            <center><h2>Oferty użytkownika</h2></center>
+            <div class="centered" style="width:1200px; margin: auto; position: relative;">
+                <div th:each="offer : ${myOfferList}">
+                    <div class='row well well-lg'>
+                        <div class='col-md-2 centered'>
+                            <a href='#' class='thumbnail autoMargin'>
+                                <img th:src='@{${offer.imagePath}}'/>
+                            </a>
+                        </div>
+                        <div class='col-md-10'>
+                            <h1 th:text="${offer.title}"></h1>
+
+                            <div class="row">
+                                <div class="col-sm-4"><label>Category: </label><p th:text="${offer.name}"></p></div>
+                                <div class="col-sm-4"><label>Exchange for: </label><p th:text="${offer.exchangeFor}"></p></div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-sm-4"><label>Offered date: </label><p th:text="${offer.offeredDate}"></p></div>
+                                <div class="col-sm-4"><label>Add product date: </label><p th:text="${offer.addDate}"></p></div>
+                                <div class="col-sm-4"><label>Exchanged date: </label><p th:text="${offer.exchangeDate}"></p></div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-sm-4"><label>Owner: </label><p th:text="${offer.ownerLogin}"></p></div>
+                                <div class="col-sm-4"><label>Buyer: </label><p th:text="${offer.buyerLogin}"></p></div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-sm-4"><label>Description: </label><p th:text="${offer.description}"></p></div>
+                                <div class="col-sm-4"><label>Rate: </label><p th:text="${offer.rate}"></p></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
