@@ -40,14 +40,15 @@
                     <label class="col-sm-6 control-label">Jakiej kategorii produktu potrzebujesz</label>
                     <a/>
                     <div class="radio">
-                        <div class='panel ' th:each="product : ${myProducts}">
+                        <div class='panel ' th:each="category : ${category}">
 
                             <input type="radio" name="optradio" >
-                            <a href='#' th:text="${product.title}"/>
+                            <a href='#' th:text="${category.name}"/>
                             </input>
                         </div>
                     </div>
                 </div>
+                <button type="submit" class="btn btn-primary">Złóż ofertę</button>
             </form>
         </div>
     </div>

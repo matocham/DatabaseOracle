@@ -14,7 +14,6 @@ public class OfferedProductsList implements Serializable {
     Offer offerId;
 
     @OneToMany(targetEntity = Product.class)
-
     @JoinColumn(name = "PRODUCTID", foreignKey = @ForeignKey(name = "FK_PRODUCT"))
     Set<Product> productId;
 

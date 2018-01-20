@@ -3,9 +3,9 @@ package pl.edu.pb.wi.project.database.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.bind.annotation.*;
 import pl.edu.pb.wi.project.database.models.Category;
+import pl.edu.pb.wi.project.database.models.Offer;
 import pl.edu.pb.wi.project.database.models.Product;
 import pl.edu.pb.wi.project.database.repositories.CategoryRepository;
 import pl.edu.pb.wi.project.database.repositories.OfferRepository;
@@ -21,7 +21,10 @@ import javax.servlet.http.HttpSession;
 public class OfferController {
     @Autowired
     ProductRepository productRepository;
+    @Autowired
     CategoryRepository categoryRepository;
+    @Autowired
+    OfferRepository offerRepository;
     public static final String USER_ID_SESSION = "userId";
 
     //@RequestMapping("/addOffer")
@@ -36,13 +39,21 @@ public class OfferController {
         model.addAttribute("myProducts", myProducts);
         return "myProducts";
     }
-    @RequestMapping("/addOffer")
-    String addOffer(Model model, HttpSession session) {
 
+
+    @RequestMapping("/addOffer")
+    String addOffer(@RequestParam(name = "id") Long productId, Model model,HttpSession session) {
         Iterable<Product> myProducts = productRepository.findProductByOwnerId(Long.parseLong(session.getAttribute(USER_ID_SESSION).toString()));
+        Product productFromOffer=  productRepository.findById(productId);
         Iterable<Category> categories= categoryRepository.findAll();
         model.addAttribute("myProducts", myProducts);
         model.addAttribute("category",categories);
+        model.addAttribute("productFromOffer",productFromOffer);
         return "addOffer";
+    }
+    @PostMapping("/addOffer")
+    String addOffer(){
+        System.err.print("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
+        return "index";
     }
 }
