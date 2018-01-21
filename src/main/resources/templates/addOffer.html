@@ -1,51 +1,51 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
-<head th:fragment="pageHead">
-    <meta charset="UTF-8"/>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <title>Barter-pro</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1"/>
-    <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/3.3.7-1/css/bootstrap.min.css}"></link>
-    <link rel="stylesheet" type="text/css" th:href="@{/css/site.css}"></link>
-    <script type="application/javascript" th:src="@{/js/utils.js}"></script>
-    <script type="application/javascript" th:src="@{/webjars/jquery/1.11.1/jquery.min.js}"></script>
-    <script type="application/javascript" th:src="@{/webjars/bootstrap/3.3.7-1/js/bootstrap.min.js}"></script>
-</head>
+<head th:replace="baseNoCategories :: pageHead"></head>
 <body>
 <div class="container-fluid">
-    <div th:replace="base :: header"></div>
+    <div th:replace="baseNoCategories :: header"></div>
     <div class="row">
         <div class="col-md-8 col-md-offset-2">
-            <form method="post" th:action="@{/addOffer}" class="horizontal-form" id="addItemForm" accept-charset="UTF-8"
-                  enctype="multipart/form-data">
-                <div class="row">
-                    <div class="col-sm-10 col-sm-offset-2">
-                        <h2>Dodaj nową ofertę</h2>
+            <h2 th:inline="text">Chcesz otrzymać produkt:</h2>
+            <div class='panel panel-default'>
+                <div class='row addContainer vertical-align' th:object="${wantedProduct}">
+                    <div class='col-md-2 centered'>
+                        <a th:href="@{product/{id}(id=*{id})}" class='thumbnail autoMargin'>
+                            <img th:src='@{/external/{path}(path=*{imageUrl})}'/>
+                        </a>
+                    </div>
+                    <div class='col-md-10'>
+                        <div class='h3 addHeader'>
+                            <a th:href="@{product/{id}(id=*{id})}" th:text="*{title}"></a>
+                        </div>
+                        <div class='h6 fromCategory' th:text="'Z kategorii: ' + *{category.name}">
+                        </div>
+                        <div class='h4 echangeFor'>
+                            <b th:text="'Zamię się za: ' + *{exchangeFor.name}"></b>
+                        </div>
+                        <div class='h6 city'><span th:text="*{owner.city}"></span>
+                        </div>
+                        <div class='h6 addedDate' th:inline="text"><b>Dodano</b>&nbsp;[[*{#dates.format(addDate,
+                            'dd-MM-yyyy')}]]
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <h2>Oferujesz w zamian:</h2>
+            <form method="post" th:action="@{/addOffer}" class="horizontal-form" id="addItemForm"
+                  accept-charset="UTF-8">
+                <input type="hidden" th:value="${wantedProduct.id}" name="wantedProductId"/>
+                <div class="form-group row">
+                    <label class="control-label">Wybierz przedmiot do wymiany</label><br/>
+                    <div class="form-check" th:each="product : ${myProducts}">
+                        <input class="form-check-input" type="checkbox" th:value="${product.id}" name="prodCheckbox" th:text="${product.title}"/>
                     </div>
                 </div>
 
                 <div class="form-group row">
-                    <label class="col-sm-6 control-label">Wybierz przedmiot do wymiany</label>
-                    <a/>
-                    <div class="radio">
-                        <div class='panel ' th:each="product : ${myProducts}">
-
-                            <input type="radio" name="optradio" >
-                            <a href='#' th:text="${product.title}"/>
-                            </input>
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <label class="col-sm-6 control-label">Jakiej kategorii produktu potrzebujesz</label>
-                    <a/>
-                    <div class="radio">
-                        <div class='panel ' th:each="product : ${myProducts}">
-
-                            <input type="radio" name="optradio" >
-                            <a href='#' th:text="${product.title}"/>
-                            </input>
-                        </div>
+                    <div class="col-sm-offset-2 col-sm-10">
+                        <button type="submit" class="btn btn-primary">Dodaj ofertę</button>
                     </div>
                 </div>
             </form>
