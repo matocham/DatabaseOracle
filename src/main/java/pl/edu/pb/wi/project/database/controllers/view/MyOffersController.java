@@ -33,7 +33,7 @@ public class MyOffersController {
     String userOffers(Model model, HttpServletRequest request, HttpSession session){
         Long sessionUserId = (Long) session.getAttribute(LoginController.USER_ID_SESSION);//= request.getParameter("login");
         String login = usersRepository.findById(sessionUserId).getLogin();
-        List<MyOffers> myOfferList = myOffersRepository.findByOwnerLogin(login);
+        List<MyOffers> myOfferList = myOffersRepository.findByBuyerLogin(login);
         model.addAttribute("myOfferList", myOfferList);
         return "userOffers";
     }
