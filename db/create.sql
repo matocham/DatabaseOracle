@@ -253,7 +253,6 @@ create or replace TRIGGER conv_h_update_trigger INSTEAD OF UPDATE on conversatio
   END;
 /
 
-select * from conversation_heading;
 -- insert
 create or replace TRIGGER con_h_insert_trigger INSTEAD OF INSERT on conversation_heading
   DECLARE

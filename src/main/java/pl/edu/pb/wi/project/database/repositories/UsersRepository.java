@@ -24,19 +24,4 @@ public interface UsersRepository extends CrudRepository<Users, Long> {
 
     @Query(value = "select * from Users where login =  ?1 and user_password = utilities.get_hash_val( ?2 )", nativeQuery = true)
     List<Users> findUsersByLoginAndPassword(String login, String password);
-    //@Function(name = "get_hash_val")
-    //void getHashPassword(@Param("p_in") String password);
-    // Set user password by login
-    //@Modifying
-    //@Query("update Users u set u.user_password = ?1 where u.login = ?2")
-    //int setPasswordByLogin(String password, String login);
-
-    // Set user password by id
-    //@Modifying
-    //@Query("update Users u set u.user_password = ?1 where u.id = ?2")
-    //int setPasswordById(String password, Long id);
-
-    //@Modifying
-    //@Query("insert into Users as u (u.id, u.name, u.last_name, u.login, u.user_password, u.email, u.city) values (USERS_SEQ.NEXTVAL, :name, :lastName, :login, :password, :email, :city)")
-    //void insertUser(@Param("name") String name, @Param("lastName") String lastName, @Param("login") String login, @Param("password") String password, @Param("email") String email, @Param("city") String city);
 }

@@ -1,14 +1,14 @@
 -- przykladowe dane
 INSERT INTO users(name, last_name, login, user_password, email, city, premium_user, admin)
-  VALUES ('Adam', 'Nowak', 'a_nowak', utilities.get_hash_val('pass1'), 'anowak@examle.com', 'Białystok', 0, 0);
+  VALUES ('Adam', 'Nowak', 'a_nowak', 'pass1', 'anowak@examle.com', 'Białystok', 0, 0);
 INSERT INTO users(name, last_name, login, user_password, email, city, premium_user, admin)
-  VALUES ('Tomasz', 'Kowalski', 't_kowalski', utilities.get_hash_val('pass2'), 'tkowalski@examle.com', 'Warszawa', 1, 0);
+  VALUES ('Tomasz', 'Kowalski', 't_kowalski', 'pass2', 'tkowalski@examle.com', 'Warszawa', 1, 0);
 INSERT INTO users(name, last_name, login, user_password, email, city, premium_user, admin)
-  VALUES ('Sebastian', 'Wiśniewski', 's_wisniewski', utilities.get_hash_val('pass3'), 'swisniewski@examle.com', 'Gdańsk', 1, 0);
+  VALUES ('Sebastian', 'Wiśniewski', 's_wisniewski', 'pass3', 'swisniewski@examle.com', 'Gdańsk', 1, 0);
 INSERT INTO users(name, last_name, login, user_password, email, city, premium_user, admin)
-  VALUES ('Bartosz', 'Brzozowski', 'b_brzozowski', utilities.get_hash_val('pass4'), 'bbrzozowski@examle.com', 'Białystok', 0, 1);
+  VALUES ('Bartosz', 'Brzozowski', 'b_brzozowski', 'pass4', 'bbrzozowski@examle.com', 'Białystok', 0, 1);
 INSERT INTO users(name, last_name, login, user_password, email, city, premium_user, admin)
-  VALUES ('Konrad', 'Zalewski', 'k_zalewski', utilities.get_hash_val('pass5'), 'kzalewski@examle.com', 'Gdańsk', 0, 0);
+  VALUES ('Konrad', 'Zalewski', 'k_zalewski', 'pass5', 'kzalewski@examle.com', 'Gdańsk', 0, 0);
 
 INSERT INTO category(name, parentCategory) VALUES ('root', NULL);
 INSERT INTO category(name, parentCategory) VALUES ('elektronika', 1);
