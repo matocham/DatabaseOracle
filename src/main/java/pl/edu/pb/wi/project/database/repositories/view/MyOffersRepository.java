@@ -6,5 +6,5 @@ import pl.edu.pb.wi.project.database.models.view.MyOffers;
 import java.util.List;
 
 public interface MyOffersRepository extends CrudRepository<MyOffers, Long> {
-    List<MyOffers> findByOwnerLogin(String login);
+    List<MyOffers> findByBuyerLogin(String login);
 }
