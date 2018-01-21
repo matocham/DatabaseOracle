@@ -8,9 +8,11 @@ import pl.edu.pb.wi.project.database.models.Product;
 import java.util.List;
 
 public interface ProductRepository extends CrudRepository<Product, Long> {
-    @SQLInsert(sql = "Insert")
     @Query(value = "SELECT * FROM PRODUCT WHERE exchanged = 0 and category_id in (select id from category START WITH id = ?1 CONNECT BY PRIOR id = parentCategory)", nativeQuery = true)
     List<Product> findByCategoryTree(Long startingId);
+
+    @Query(value = "SELECT * FROM PRODUCT WHERE exchanged = 0 and category_id in (select id from category START WITH id = ?1 CONNECT BY PRIOR id = parentCategory) and owner_id = ?2", nativeQuery = true)
+    List<Product> findByCategoryTreeAndOwner(Long startingId, Long ownerId);
 
     List<Product> findByOwnerId(Long id);
 

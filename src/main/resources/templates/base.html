@@ -37,9 +37,8 @@
             <div class="col-md-6 centered justFelexEnd">
                 <div th:if="${session != null and session.userId != null}">
                     <div id="loginHolder" class="flexAlignedCenter">
-                        <a class="btn btn-default btn-block" style="margin-top: 5px" th:href="@{/userOffers}">Twoje Oferty</a>
                         <a class="btn btn-default btn-block" style="margin-top: 5px" th:href="@{/offered}">Zaoferowano ci</a>
-                        <a class="btn btn-default btn-block" style="margin-top: 5px" th:href="@{/item/add}">Moje Oferty</a>
+                        <a class="btn btn-default btn-block" style="margin-top: 5px" th:href="@{/userOffers}">Moje Oferty</a>
                         <a class="btn btn-default btn-block" th:href="@{/myProducts}">Moje Produkty</a>
                         <span id="loggeedAs" th:text="'Witaj, '+${session.user.login}"></span>
                         <a id="logout" class="btn btn-default btn-block" th:href="@{/logout}">Wyloguj się</a>
@@ -47,7 +46,7 @@
                 </div>
                 <div th:unless="${session != null and session.userId != null}">
                     <div class="flexAlignedCenter" id="loginHolder">
-                        <a class="btn btn-default btn-block" style="margin-left: auto; margin-top: 5px; margin-right: 5px;" th:href="@{/register}">Zarejestruj się</a>
+                        <a class="btn btn-default btn-block" style="margin-top: 5px; margin-right: 5px" th:href="@{/register}">Zarejestruj się</a>
                         <a id="addItem" class="btn btn-default btn-block" style="margin-left: auto" th:href="@{/login}">Zaloguj się</a>
                     </div>
                 </div>

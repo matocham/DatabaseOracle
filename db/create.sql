@@ -88,6 +88,68 @@ AS
     RETURN VARCHAR2;
 END;
 /
+CREATE OR REPLACE PACKAGE BODY utilities AS
+  PROCEDURE finalize_exchange(offer_id offer.id%TYPE)
+  AS
+    v_offer offer%ROWTYPE;
+    BEGIN
+      SELECT * INTO v_offer FROM offer WHERE id = offer_id;
+      UPDATE product SET exchanged = 1 WHERE id = v_offer.product_id;
+      UPDATE product SET exchanged = 1
+      WHERE id IN (
+        SELECT product_id FROM offered_products_list WHERE offer_id = v_offer.id
+      );
+      UPDATE offer SET exchange_date = current_date WHERE id = v_offer.id;
+
+      DELETE from offer
+      where (product_id in
+             (SELECT product_id FROM offered_products_list WHERE offer_id = v_offer.id)
+             or product_id = v_offer.product_id)
+            and id != v_offer.id;
+      DELETE from offered_products_list
+      where (product_id = v_offer.product_id
+             or product_id in
+                (SELECT product_id FROM offered_products_list WHERE offer_id = v_offer.id))
+            and offer_id != v_offer.id;
+
+      DELETE from offer where not exists (select 1 from offered_products_list where offer_id = offer.id);
+      COMMIT;
+      EXCEPTION
+      WHEN NO_DATA_FOUND THEN
+      raise_application_error(-20001, 'Offer does not exists!');
+      WHEN TOO_MANY_ROWS THEN
+      raise_application_error(-20002, 'Duplicated offer data!');
+      WHEN OTHERS THEN
+      raise_application_error(-29999, 'Unexpected error!');
+    END;
+  PROCEDURE remove_conversation(conv_id conversation.id%TYPE, user_id users.id%TYPE)
+  AS
+    row_count_as_sender   INTEGER;
+    row_count_as_receiver INTEGER;
+    BEGIN
+      SELECT count(1) INTO row_count_as_sender FROM conversation WHERE id = conv_id AND init_sender = user_id;
+      SELECT count(1) INTO row_count_as_receiver FROM conversation WHERE id = conv_id AND init_receiver = user_id;
+
+      IF row_count_as_sender = row_count_as_receiver THEN
+        raise_application_error(-20003, 'Data is inconsistent. Sender and receiver are the same person');
+      ELSIF row_count_as_sender > 0 THEN
+        UPDATE conversation SET sender_deleted = 1 WHERE id = conv_id;
+      ELSIF row_count_as_receiver > 0 THEN
+        UPDATE conversation SET receiver_deleted = 1 WHERE id = conv_id;
+      ELSE
+        RAISE NO_DATA_FOUND;
+      END IF;
+    END;
+  FUNCTION get_hash_val(p_in VARCHAR2)
+    RETURN VARCHAR2
+  IS
+    l_hash VARCHAR2(2000);
+    BEGIN
+      l_hash := RAWTOHEX(UTL_RAW.cast_to_raw(DBMS_OBFUSCATION_TOOLKIT.md5(input_string => p_in)));
+      RETURN l_hash;
+    END;
+END;
+
 --stworzenie triggerów do autoincrement
 CREATE OR REPLACE TRIGGER users_insert_trigger
   BEFORE INSERT ON users FOR EACH ROW
@@ -131,69 +193,48 @@ CREATE OR REPLACE TRIGGER offer_insert_trigger
   END;
 /
 
---stworzenie procedur i funkcji w paczce
 
-CREATE OR REPLACE PACKAGE BODY utilities AS
-  PROCEDURE finalize_exchange(offer_id offer.id%TYPE)
-  AS
-    v_offer offer%ROWTYPE;
-    BEGIN
-      SELECT * INTO v_offer FROM offer WHERE id = offer_id;
-      UPDATE product SET exchanged = 1 WHERE id = v_offer.product_id;
-      UPDATE product SET exchanged = 1
-      WHERE id IN (
-        SELECT product_id FROM offered_products_list WHERE offer_id = v_offer.id
-      );
-      UPDATE offer SET exchange_date = current_date WHERE id = v_offer.id;
+--stworzenie triggerów do autoincrement
+CREATE OR REPLACE TRIGGER users_insert_trigger
+  BEFORE INSERT ON users FOR EACH ROW
+  BEGIN
+    SELECT users_seq.nextval INTO :new.id from dual;
+    :new.user_password := utilities.get_hash_val(:new.user_password);
+  END;
+/
+CREATE OR REPLACE TRIGGER category_insert_trigger
+  BEFORE INSERT ON category FOR EACH ROW
+  BEGIN
+    SELECT category_seq.nextval INTO :new.id from dual;
+  END;
+/
+CREATE OR REPLACE TRIGGER product_insert_trigger
+  BEFORE INSERT ON product FOR EACH ROW
+  BEGIN
+    SELECT product_seq.nextval INTO :new.id from dual;
+    :new.add_date := current_date;
+  END;
 
-      DELETE from offer
-        where (product_id in
-                (SELECT product_id FROM offered_products_list WHERE offer_id = v_offer.id)
-          or product_id = v_offer.product_id)
-          and id != v_offer.id;
-      DELETE from offered_products_list
-        where (product_id = v_offer.product_id
-              or product_id in
-              (SELECT product_id FROM offered_products_list WHERE offer_id = v_offer.id))
-              and offer_id != v_offer.id;
+CREATE OR REPLACE TRIGGER conversation_insert_trigger
+  BEFORE INSERT ON conversation FOR EACH ROW
+  BEGIN
+    SELECT conversation_seq.nextval INTO :new.id from dual;
+  END;
+/
+CREATE OR REPLACE TRIGGER message_insert_trigger
+  BEFORE INSERT ON message FOR EACH ROW
+  BEGIN
+    SELECT message_seq.nextval INTO :new.id from dual;
+    :new.send_date := current_date;
+  END;
+/
 
-      DELETE from offer where not exists (select 1 from offered_products_list where offer_id = offer.id);
-      COMMIT;
-      EXCEPTION
-      WHEN NO_DATA_FOUND THEN
-      raise_application_error(-20001, 'Offer does not exists!');
-      WHEN TOO_MANY_ROWS THEN
-      raise_application_error(-20002, 'Duplicated offer data!');
-      WHEN OTHERS THEN
-      raise_application_error(-29999, 'Unexpected error!');
-    END;
-  PROCEDURE remove_conversation(conv_id conversation.id%TYPE, user_id users.id%TYPE)
-  AS
-    row_count_as_sender   INTEGER;
-    row_count_as_receiver INTEGER;
-    BEGIN
-      SELECT count(1) INTO row_count_as_sender FROM conversation WHERE id = conv_id AND init_sender = user_id;
-      SELECT count(1) INTO row_count_as_receiver FROM conversation WHERE id = conv_id AND init_receiver = user_id;
-
-      IF row_count_as_sender = row_count_as_receiver THEN
-        raise_application_error(-20003, 'Data is inconsistent. Sender and receiver are the same person');
-      ELSIF row_count_as_sender > 0 THEN
-        UPDATE conversation SET sender_deleted = 1 WHERE id = conv_id;
-      ELSIF row_count_as_receiver > 0 THEN
-        UPDATE conversation SET receiver_deleted = 1 WHERE id = conv_id;
-      ELSE
-        RAISE NO_DATA_FOUND;
-      END IF;
-    END;
-  FUNCTION get_hash_val(p_in VARCHAR2)
-    RETURN VARCHAR2
-  IS
-    l_hash VARCHAR2(2000);
-    BEGIN
-      l_hash := RAWTOHEX(UTL_RAW.cast_to_raw(DBMS_OBFUSCATION_TOOLKIT.md5(input_string => p_in)));
-      RETURN l_hash;
-    END;
-END;
+CREATE OR REPLACE TRIGGER offer_insert_trigger
+  BEFORE INSERT ON offer FOR EACH ROW
+  BEGIN
+    SELECT offer_seq.nextval INTO :new.id from dual;
+    :new.offered_date := current_date;
+  END;
 /
 
 --podsumowanie konwersacji, które można wykorzystać przy wyświetlaniu aktualnych rozmów
