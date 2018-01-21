@@ -12,6 +12,7 @@ public class OfferedMe {
     private Long id;
     private String ownerLogin;
     private long offerId;
+    private long productId;
     private String productTitle;
     private String productName;
     private String productImage;
@@ -33,6 +34,16 @@ public class OfferedMe {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    @Basic
+    @Column(name = "PRODUCT_ID")
+    public long getProductId() {
+        return productId;
+    }
+
+    public void setProductId(long productId) {
+        this.productId = productId;
     }
 
     @Basic
@@ -183,6 +194,7 @@ public class OfferedMe {
         return offerId == offeredMe.offerId &&
                 forProductId == offeredMe.forProductId &&
                 Objects.equals(id, offeredMe.id) &&
+                Objects.equals(productId, offeredMe.productId) &&
                 Objects.equals(forLogin, offeredMe.forLogin) &&
                 Objects.equals(ownerLogin, offeredMe.ownerLogin) &&
                 Objects.equals(productTitle, offeredMe.productTitle) &&
@@ -199,7 +211,6 @@ public class OfferedMe {
 
     @Override
     public int hashCode() {
-
-        return Objects.hash(id, ownerLogin, offerId, productTitle, productName, productImage, forLogin, forProductId, forOwnerId, forTitle, forDescription, forName, forExchangeFor, forExchanged, forImagePath);
+        return Objects.hash(id, productId, ownerLogin, offerId, productTitle, productName, productImage, forLogin, forProductId, forOwnerId, forTitle, forDescription, forName, forExchangeFor, forExchanged, forImagePath);
     }
 }
