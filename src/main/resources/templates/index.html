@@ -22,7 +22,7 @@
                             <div class='h3 addHeader'>
                                 <a th:href="@{product/{id}(id=${product.id})}" th:text="${product.title}"></a>
                             </div>
-                            <div class='h6 fromCategory' th:text="'Z kategorii: ' + ${product.category.name}" >
+                            <div class='h6 fromCategory' th:text="'Z kategorii: ' + ${product.category.name}">
                             </div>
                             <div class='h4 echangeFor'>
                                 <b th:text="'Zamieni się za: ' + ${product.exchangeFor.name}"></b>
@@ -31,11 +31,16 @@
                             </div>
                             <div class='h6 city'><span th:text="${product.owner.city}"></span>
                             </div>
-                            <div class='h6 addedDate' th:inline="text"><b>Dodano</b>&nbsp;[[${#dates.format(product.addDate, 'dd-MM-yyyy')}]]</div>
+                            <div class='h6 addedDate' th:inline="text"><b>Dodano</b>&nbsp;[[${#dates.format(product.addDate,
+                                'dd-MM-yyyy')}]]
+                            </div>
                             <div th:if="${session != null and session.userId != null}">
 
-                                <a class="btn btn-default btn-success" th:href="@{/addOffer(id=${product.id})}">Złóż ofertę</a>
-                                <a class="btn btn-default btn-warning" th:href="@{/conversation(id=${product.id})}">Zadaj pytanie</a>
+                                    <a class="btn btn-default btn-success" th:href="@{/addOffer(id=${product.id})}">Złóż
+                                        ofertę</a>
+                                    <a class="btn btn-default btn-warning" th:href="@{/conversation(id=${product.id})}">Zadaj
+                                        pytanie</a>
+                       
                             </div>
                         </div>
                     </div>
