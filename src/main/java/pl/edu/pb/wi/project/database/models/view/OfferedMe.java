@@ -7,7 +7,7 @@ import javax.persistence.Table;
 import java.util.Objects;
 
 @Entity
-@Table(name = "OFFEREDME", schema = "SYSTEM", catalog = "")
+@Table(name = "OFFEREDME")
 public class OfferedMe {
     private Long id;
     private String ownerLogin;

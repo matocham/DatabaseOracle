@@ -8,7 +8,7 @@ import java.sql.Time;
 import java.util.Objects;
 
 @Entity
-@Table(name = "MYOFFERS", schema = "SYSTEM", catalog = "")
+@Table(name = "MYOFFERS")
 public class MyOffers {
     private Long id;
     private String buyerLogin;
