@@ -106,7 +106,7 @@ CREATE OR REPLACE TRIGGER product_insert_trigger
   BEFORE INSERT ON product FOR EACH ROW
   BEGIN
     SELECT product_seq.nextval INTO :new.id from dual;
-    --:new.add_date := current_date;
+    :new.add_date := current_date;
   END;
 
 CREATE OR REPLACE TRIGGER conversation_insert_trigger
@@ -119,14 +119,15 @@ CREATE OR REPLACE TRIGGER message_insert_trigger
   BEFORE INSERT ON message FOR EACH ROW
   BEGIN
     SELECT message_seq.nextval INTO :new.id from dual;
-    --:new.send_date := current_date;
+    :new.send_date := current_date;
   END;
 /
+
 CREATE OR REPLACE TRIGGER offer_insert_trigger
   BEFORE INSERT ON offer FOR EACH ROW
   BEGIN
     SELECT offer_seq.nextval INTO :new.id from dual;
-    --:new.offered_date := current_date;
+    :new.offered_date := current_date;
   END;
 /
 
@@ -195,30 +196,7 @@ CREATE OR REPLACE PACKAGE BODY utilities AS
 END;
 /
 
--- po zaladowaniu danych testowych dodaj triggery z automatycznym ustawianiem dat
-CREATE OR REPLACE TRIGGER product_insert_trigger
-  BEFORE INSERT ON product FOR EACH ROW
-  BEGIN
-    SELECT product_seq.nextval INTO :new.id from dual;
-    :new.add_date := current_date;
-  END;
-/
-CREATE OR REPLACE TRIGGER message_insert_trigger
-  BEFORE INSERT ON message FOR EACH ROW
-  BEGIN
-    SELECT message_seq.nextval INTO :new.id from dual;
-    :new.send_date := current_date;
-  END;
-/
-CREATE OR REPLACE TRIGGER offer_insert_trigger
-  BEFORE INSERT ON offer FOR EACH ROW
-  BEGIN
-    SELECT offer_seq.nextval INTO :new.id from dual;
-    :new.offered_date := current_date;
-  END;
-/
-
---propozycja perspektywy - podsumowanie konwersacji, które można wykorzystać przy wyświetlaniu aktualnych rozmów
+--podsumowanie konwersacji, które można wykorzystać przy wyświetlaniu aktualnych rozmów
 create or replace view conversation_heading as
   select c.id, p.title, p.image_path, p.id as product_id, sender_id as sender, m.receiver_id as receiver, m.msg_body, m.send_date,
     c.sender_deleted, c.receiver_deleted, m.is_displayed
@@ -245,4 +223,37 @@ create or replace TRIGGER con_h_insert_trigger INSTEAD OF INSERT on conversation
   END;
 
 /
+
+-- dodatkowe widoki
+CREATE OR REPLACE VIEW myOffers AS
+  SELECT
+    o.id AS ID,
+    o.PRODUCT_ID as PRODUCT_ID,
+    u1.login as buyer_login,
+    u.LOGIN as owner_login,
+    c1.name as exchange_for,
+    o.offered_date, o.exchange_date, o.rate,
+    c.NAME,
+    p.title, p.add_date, p.description, p.exchanged, p.IMAGE_PATH
+  FROM offer o, product p, category c, category c1, users u, users u1
+  WHERE o.product_id = p.id AND p.category_id = c.ID AND p.owner_id = u.id AND c1.id = p.EXCHANGE_FOR AND o.buyer_id = u1.id;
+
+-- Widok przed optymalizacją
+CREATE OR REPLACE VIEW offeredMe AS
+  SELECT
+    --Za tą oferte
+      rownum AS ID,
+      mo.owner_login AS OWNER_LOGIN, mo.PRODUCT_ID,
+      mo.ID as OFFER_ID , mo.TITLE AS PRODUCT_TITLE, mo.NAME AS PRODUCT_NAME, mo.IMAGE_PATH AS PRODUCT_IMAGE,
+    --zaoferowali.
+      (SELECT u.login FROM Users u WHERE u.id = p.OWNER_ID) AS FOR_LOGIN,
+      p.ID AS FOR_PRODUCT_ID, p.OWNER_ID as FOR_OWNER_ID
+    , p.TITLE AS FOR_TITLE, p.DESCRIPTION as FOR_DESCRIPTION,
+      (SELECT c.name FROM CATEGORY c WHERE c.id = p.CATEGORY_ID) AS FOR_NAME,
+      (SELECT c.name FROM category c WHERE p.exchange_For = c.id ) AS for_exchange_for,
+      p.EXCHANGED as FOR_EXCHANGED, p.IMAGE_PATH as FOR_IMAGE_PATH
+  FROM myOffers mo, offered_products_list opl ,product p
+  WHERE mo.id = opl.offer_id
+        AND opl.product_id = p.ID;
+
 commit;
