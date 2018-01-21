@@ -52,14 +52,14 @@ public class ConversationControler {
         ConversationView conversationView=new ConversationView();
         Long sender=Long.parseLong(session.getAttribute(USER_ID_SESSION).toString());
         Users user1= usersRepository.findById(sender);
-        conversationViewRes=conversationViewRepository.findConversationViewByParameters(product,user1);
+        List<Conversation> existingConversation = conversationRepository.findConversations(sender, product.getId());
         conversationView.setSenderId(user1);
         conversationView.setMsgBody(description);
         conversationView.setDisplayed(false);
         conversationView.setSendDate(new Date());
         conversationView.setReceiverId(product.getOwner());
-       if(conversationViewRes!=null && conversationViewRes.size()>0) {
-           conversationView.setId(conversationViewRes.get(0).getId());
+       if(existingConversation!=null && existingConversation.size()>0) {
+           conversationView.setId(existingConversation.get(0).getId());
        }
        else{
 

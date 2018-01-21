@@ -12,7 +12,7 @@ import java.util.List;
 
 public interface ConversationViewRepository extends CrudRepository<ConversationView, Long> {
     //List<ConversationView> findByProductIdAndReceiverIdOrSenderId(Product productId, Users receiverId,Users senderId);
-    @Query(value = "select * from conversation_heading where product_id =  ?1 and (receiver=?2 or(sender = ?2)) ", nativeQuery = true)
+    @Query(value = "select * from conversation_heading where product_id =  ?1 and (receiver= ?2 or (sender = ?2)) ", nativeQuery = true)
     List<ConversationView> findConversationViewByParameters(Product productId, Users receiverId);
 
 

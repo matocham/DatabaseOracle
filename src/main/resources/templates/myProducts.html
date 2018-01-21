@@ -43,8 +43,7 @@
                             <div class='h6 city'><span th:text="${product.owner.city}"></span>
                             </div>
                             <div class='h6 addedDate' th:inline="text"><b>Dodano</b>&nbsp;[[${#dates.format(product.addDate, 'dd-MM-yyyy')}]]</div>
-                            <a class="btn btn-default btn-warning" th:href="@{/conversation(id=${product.id})}">Zadaj
-                                pytanie</a>
+                            <a class="btn btn-default btn-warning" th:href="@{/conversation(id=${product.id})}">Wiadomości</a>
 
                         </div>
 
