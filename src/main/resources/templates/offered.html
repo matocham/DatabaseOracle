@@ -7,27 +7,34 @@
     <div th:replace="base :: header"></div>
     <div>
         <center><h2>Zaoferowano tobie</h2></center>
-        <div class="centered" style="width:1200px; margin: auto; position: relative;">
-            <div th:each="offered : ${myOfferedMeList}">
-                    <div class='col-md-5 well well-lg'>
-                        <div class="row">
-                            <a href='#' class='thumbnail autoMargin'>
-                                <img class="maxImgSizeOffered" th:src="@{/external/{path}(path=${offered.productImage})}"/>
-                            </a>
-                            <h1 th:text="${offered.productTitle}"></h1>
+        <div class="panel panel-default centered" style="width:1200px; margin: auto; position: relative;">
+            <div class="row addBigContainer vertical-align" th:each="offered : ${myOfferedMeList}">
+                <div class="col-md-5">
+                    <div class='col-md-6 centered'>
+                        <a th:href='@{product/{id}(id=${offered.productId})}' class='thumbnail autoMargin'>
+                            <img class="maxImgSizeOffered" th:src="@{/external/{path}(path=${offered.productImage})}"/>
+                        </a>
+                    </div>
+                        <div class='col-md-6'>
+                            <p class="h2" th:text="${offered.productTitle}"></p>
                             <p th:text="${offered.productName}"></p>
                             <p th:text="${offered.ownerLogin}"></p>
                         </div>
                     </div>
-                    <div class='col-md-2' style="text-align: center;">
-                        <button class="btn btn-default btn-success">Przejdź do oferty</button>
+                    <div class='col-md-2 ' style="text-align: center; ">
+                        <a th:href="@{product/{id}(id=${offered.forProductId})}" class=''>
+                            <button  class="vertical-center btn btn-default btn-success ">Przejdź do oferty</button>
+                        </a>
                     </div>
-                    <div class='col-md-5 well well-lg'>
-                        <div class="row">
-                            <a href='#' class='thumbnail autoMargin'>
+
+                    <div class="col-md-5">
+                        <div class='col-md-6 centered'>
+                            <a th:href="@{product/{id}(id=${offered.forProductId})}" class='thumbnail autoMargin'>
                                 <img class="maxImgSizeOffered" th:src="@{/external/{path}(path=${offered.forImagePath})}"/>
                             </a>
-                            <h1 th:text="${offered.forTitle}"></h1>
+                        </div>
+                        <div class='col-md-6'>
+                            <p  class="h2" th:text="${offered.forTitle}"></p>
                             <p th:text="${offered.forName}"></p>
                             <p th:text="${offered.forLogin}"></p>
                         </div>
