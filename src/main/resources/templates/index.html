@@ -35,7 +35,7 @@
                             <div th:if="${session != null and session.userId != null}">
 
                                 <a class="btn btn-default btn-success" th:href="@{/addOffer(id=${product.id})}">Złóż ofertę</a>
-                                <a class="btn btn-default btn-warning" th:href="@{/converstation}">Zadaj pytanie</a>
+                                <a class="btn btn-default btn-warning" th:href="@{/conversation(id=${product.id})}">Zadaj pytanie</a>
                             </div>
                         </div>
                     </div>

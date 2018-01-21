@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 import pl.edu.pb.wi.project.database.models.Category;
 import pl.edu.pb.wi.project.database.models.Offer;
 import pl.edu.pb.wi.project.database.models.Product;
@@ -52,8 +53,10 @@ public class OfferController {
         return "addOffer";
     }
     @PostMapping("/addOffer")
-    String addOffer(){
-        System.err.print("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
+    String addOffer(Model model,@RequestParam("checkboxname")String[] checkboxvalues){
+
+            ModelAndView mv = new ModelAndView("functionList");
+           // mv.addObject("functionList", getFunctionsFromDB());
         return "index";
     }
 }
