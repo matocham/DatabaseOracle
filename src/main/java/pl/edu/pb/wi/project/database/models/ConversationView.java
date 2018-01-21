@@ -1,27 +1,33 @@
 package pl.edu.pb.wi.project.database.models;
 
+import org.hibernate.annotations.GenericGenerator;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 
-@Entity
+
 @Table(name = "conversation_heading")
-public class ConversationView  implements Serializable {
+@Entity
+public class ConversationView implements Serializable {
     @Id
     @Column(name = "ID")
+    @GeneratedValue(generator = "increment")
+    @GenericGenerator(name = "increment", strategy = "increment")
     Long id;
+
     @Column(name = "title")
     String title;
     @Column(name = "image_path")
     String imagePath;
     @ManyToOne(targetEntity = Product.class)
-    @JoinColumn(name = "product_id",referencedColumnName = "ID")
+    @JoinColumn(name = "product_id", referencedColumnName = "ID")
     Product productId;
     @ManyToOne(targetEntity = Users.class)
-    @JoinColumn(name = "sender",referencedColumnName = "ID")
+    @JoinColumn(name = "sender", referencedColumnName = "ID")
     Users senderId;
     @ManyToOne(targetEntity = Users.class)
-    @JoinColumn(name = "receiver",referencedColumnName = "ID")
+    @JoinColumn(name = "receiver", referencedColumnName = "ID")
     Users receiverId;
     @Column(name = "msg_body")
     String msgBody;
@@ -122,6 +128,3 @@ public class ConversationView  implements Serializable {
         isDisplayed = displayed;
     }
 }
-
-// select c.id, p.title, p.image_path, p.id as product_id, u.id as sender, u2.id as receiver, m.msg_body, m.send_date, c.sender_deleted, c.receiver_deleted, m.is_displayed
-//      from product p, conversation c, users u, users u2, message m

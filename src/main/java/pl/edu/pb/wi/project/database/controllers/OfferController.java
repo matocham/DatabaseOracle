@@ -55,8 +55,7 @@ public class OfferController {
     @PostMapping("/addOffer")
     String addOffer(Model model,@RequestParam("checkboxname")String[] checkboxvalues){
 
-            ModelAndView mv = new ModelAndView("functionList");
-           // mv.addObject("functionList", getFunctionsFromDB());
+
         return "index";
     }
 }

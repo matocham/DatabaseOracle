@@ -32,7 +32,7 @@ public class Message implements Serializable {
     @Column(name = "SEND_DATE")
     Date sendDate;
 
-    @JoinColumn (name = "CONVERSTATION",referencedColumnName = "ID")
+    @JoinColumn (name = "CONVERSATION",referencedColumnName = "ID")
     @ManyToOne(fetch = FetchType.EAGER)
     Conversation conversation;
 

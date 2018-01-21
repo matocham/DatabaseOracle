@@ -10,18 +10,19 @@
         <div class="col-md-8 categories">
             <h2>Witamy w serwisie</h2>
             <!--<div class="loader box" id="catLoader"></div>-->
-            <div class='panel panel-default' th:each="message : ${conversationView}">
-                <div id="">
+            <form method="post" action="#" th:action="@{/sendMessage}" class="horizontal-form" id="addMessageForm" accept-charset="UTF-8" enctype="multipart/form-data">
+            <div class='panel panel-default'    th:each="message : ${messages}">
+                <div id="none">
 
                     <div th:if="${message.senderId.Id==session.userId} ">
-                        <label class="alert alert-info col-xs-7 " th:text="${message.msgBody}"></label>
+                        <label class="alert alert-info col-xs-7 "  th:text="${message.msgBody}"></label>
                     </div>
                     <div th:unless="${message.senderId.Id==session.userId} ">
                         <label class="alert alert-warning col-xs-7 col-xs-offset-1 text-right" th:text="${message.msgBody}"></label>
                     </div>
                 </div>
             </div>
-            <div id="message">
+             <div id="message">
                 <div class="form-group row">
                     <div class="col-xs-7">
                         <textarea class="form-control col-xs-7 alert alert-info" name="description" id="description"
@@ -35,6 +36,7 @@
                     </div>
                 </div>
             </div>
+            </form>
         </div>
     </div>
 </div>
