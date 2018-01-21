@@ -26,17 +26,17 @@ public class Conversation implements Serializable {
     Users initSender;
 
     @ManyToOne(targetEntity = Users.class)
-    @JoinColumn(name = "INIT_RECIVER",referencedColumnName = "ID")
+    @JoinColumn(name = "INIT_RECEIVER",referencedColumnName = "ID")
     Users initReciver;
 
     @ManyToOne(targetEntity = Product.class)
     @JoinColumn(name = "PRODUCT_ID",referencedColumnName = "ID")
     Product productId;
 
-    @Column(name = "SENDER_DELATED")
+    @Column(name = "SENDER_DELETED")
     Boolean senderDelated;
 
-    @Column(name = "RECEIVER_DELATED")
+    @Column(name = "RECEIVER_DELETED")
     Boolean receiverDelated;
 
     public Long getId() {

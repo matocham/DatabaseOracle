@@ -88,8 +88,6 @@ AS
     RETURN VARCHAR2;
 END;
 /
---stworzenie procedur i funkcji w paczce
-
 CREATE OR REPLACE PACKAGE BODY utilities AS
   PROCEDURE finalize_exchange(offer_id offer.id%TYPE)
   AS
@@ -151,7 +149,50 @@ CREATE OR REPLACE PACKAGE BODY utilities AS
       RETURN l_hash;
     END;
 END;
+
+--stworzenie triggerów do autoincrement
+CREATE OR REPLACE TRIGGER users_insert_trigger
+  BEFORE INSERT ON users FOR EACH ROW
+  BEGIN
+    SELECT users_seq.nextval INTO :new.id from dual;
+    :new.user_password := utilities.get_hash_val(:new.user_password);
+  END;
 /
+CREATE OR REPLACE TRIGGER category_insert_trigger
+  BEFORE INSERT ON category FOR EACH ROW
+  BEGIN
+    SELECT category_seq.nextval INTO :new.id from dual;
+  END;
+/
+CREATE OR REPLACE TRIGGER product_insert_trigger
+  BEFORE INSERT ON product FOR EACH ROW
+  BEGIN
+    SELECT product_seq.nextval INTO :new.id from dual;
+    :new.add_date := current_date;
+  END;
+/
+CREATE OR REPLACE TRIGGER conversation_insert_trigger
+  BEFORE INSERT ON conversation FOR EACH ROW
+  BEGIN
+    SELECT conversation_seq.nextval INTO :new.id from dual;
+  END;
+/
+CREATE OR REPLACE TRIGGER message_insert_trigger
+  BEFORE INSERT ON message FOR EACH ROW
+  BEGIN
+    SELECT message_seq.nextval INTO :new.id from dual;
+    :new.send_date := current_date;
+  END;
+/
+
+CREATE OR REPLACE TRIGGER offer_insert_trigger
+  BEFORE INSERT ON offer FOR EACH ROW
+  BEGIN
+    SELECT offer_seq.nextval INTO :new.id from dual;
+    :new.offered_date := current_date;
+  END;
+/
+
 
 --stworzenie triggerów do autoincrement
 CREATE OR REPLACE TRIGGER users_insert_trigger
