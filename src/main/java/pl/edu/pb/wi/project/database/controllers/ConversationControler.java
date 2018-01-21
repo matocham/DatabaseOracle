@@ -36,13 +36,12 @@ public class ConversationControler {
         Conversation gcon=null;
         for (Conversation c:conversation
              ) {
-            if(c.getInitSender().getId()==receiverId){
+            if(c.getInitSender().getId()==receiverId||c.getInitReciver().getId()==receiverId){
                 gcon=c;
                 break;
             }
         }
         conversationViewRes=conversationViewRepository.findConversationViewByParameters(product,user);
-
         List<Message> messages=messageRepository.findByConversation(gcon);
         model.addAttribute("conversationView",conversationViewRes);
         model.addAttribute("messages",messages);
