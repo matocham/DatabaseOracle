@@ -99,8 +99,7 @@
     <div th:replace="baseNoCategories :: header"></div>
     <div class="row">
         <div class="col-md-8 col-md-offset-2">
-            <form method="post" th:action="@{/item/add}" class="horizontal-form" id="addItemForm" accept-charset="UTF-8"
-                  enctype="multipart/form-data">
+            <form method="post" action="#" th:action="@{/addProduct}" class="horizontal-form" id="addItemForm" accept-charset="UTF-8" enctype="multipart/form-data">
                 <div class="row">
                     <div class="col-sm-10 col-sm-offset-2">
                         <h2>Dodaj nowy produkt</h2>
@@ -122,25 +121,24 @@
                     <label for="leftCategory" class="col-sm-2 control-label">Kategoria</label>
                     <div class="col-sm-10">
                         <select size="10" id="leftCategory" name="leftCategory" class="form-control ">
-                            <option value="1">Elektronika</option>
-                            <option value="2">Elektronika -> komputery</option>
+                            <option th:each="cat : ${categoriesTree}" th:value="${cat.key}" th:text="${cat.value}">Elektronika</option>
                         </select>
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <label for="image" class="col-sm-2 control-label">Zdjęcie</label>
-                    <div class="col-sm-10">
-                        <input type="file" class="form-control " name="image" id="image" accept="image/*"/>
-                        <img src="#" id="previewImage" class="sr-only previewImage"/>
                     </div>
                 </div>
                 <div class="form-group row">
                     <label for="resultCategory" class="col-sm-2 control-label">Wymienię za</label>
                     <div class="col-sm-10">
                         <select size="10" id="resultCategory" name="resultCategory" class="form-control ">
-                            <option value="1">Elektronika</option>
-                            <option value="2">Elektronika -> komputery</option>
+                            <option th:each="cat : ${categoriesTree}" th:value="${cat.key}" th:text="${cat.value}">Elektronika</option>
                         </select>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="image" class="col-sm-2 control-label">Zdjęcie</label>
+
+                    <div class="col-sm-10">
+                        <input type="file" class="form-control " name="image" id="image" accept="image/*"/>
+                        <img src="#" id="previewImage" class="sr-only previewImage"/>
                     </div>
                 </div>
                 <div class="form-group row">

@@ -144,6 +144,19 @@ CREATE OR REPLACE PACKAGE BODY utilities AS
         SELECT product_id FROM offered_products_list WHERE offer_id = v_offer.id
       );
       UPDATE offer SET exchange_date = current_date WHERE id = v_offer.id;
+
+      DELETE from offer
+        where (product_id in
+                (SELECT product_id FROM offered_products_list WHERE offer_id = v_offer.id)
+          or product_id = v_offer.product_id)
+          and id != v_offer.id;
+      DELETE from offered_products_list
+        where (product_id = v_offer.product_id
+              or product_id in
+              (SELECT product_id FROM offered_products_list WHERE offer_id = v_offer.id))
+              and offer_id != v_offer.id;
+
+      DELETE from offer where not exists (select 1 from offered_products_list where offer_id = offer.id);
       COMMIT;
       EXCEPTION
       WHEN NO_DATA_FOUND THEN
@@ -181,96 +194,7 @@ CREATE OR REPLACE PACKAGE BODY utilities AS
     END;
 END;
 /
--- przykladowe dane
-INSERT INTO users(name, last_name, login, user_password, email, city, premium_user, admin)
-VALUES ('Adam', 'Nowak', 'a_nowak', 'pass1', 'anowak@examle.com', 'Białystok', 0, 0);
-INSERT INTO users(name, last_name, login, user_password, email, city, premium_user, admin)
-VALUES ('Tomasz', 'Kowalski', 't_kowalski', 'pass2', 'tkowalski@examle.com', 'Warszawa', 1, 0);
-INSERT INTO users(name, last_name, login, user_password, email, city, premium_user, admin)
-VALUES ('Sebastian', 'Wiśniewski', 's_wisniewski', 'pass3', 'swisniewski@examle.com', 'Gdańsk', 1, 0);
-INSERT INTO users(name, last_name, login, user_password, email, city, premium_user, admin)
-VALUES ('Bartosz', 'Brzozowski', 'b_brzozowski', 'pass4', 'bbrzozowski@examle.com', 'Białystok', 0, 1);
-INSERT INTO users(name, last_name, login, user_password, email, city, premium_user, admin)
-VALUES ('Konrad', 'Zalewski', 'k_zalewski', 'pass5', 'kzalewski@examle.com', 'Gdańsk', 0, 0);
 
-INSERT INTO category(name, parentCategory) VALUES ('elektronika', NULL);
-INSERT INTO category(name, parentCategory) VALUES ('dom i ogród', NULL);
-INSERT INTO category(name, parentCategory) VALUES ('komputery', 1);
-INSERT INTO category(name, parentCategory) VALUES ('stacjonarne', 3);
-INSERT INTO category(name, parentCategory) VALUES ('laptopy', 3);
-INSERT INTO category(name, parentCategory) VALUES ('telefony', 1);
-INSERT INTO category(name, parentCategory) VALUES ('motoryzacja', NULL);
-
-INSERT INTO product(owner_id, title, description, category_id, exchange_for, add_date, exchanged, image_path)
-VALUES (2, 'root', 'description examle 1', 1, 1, TO_DATE('2017/11/01', 'yyyy/mm/dd'), 0, '/images/product/1/1');
-INSERT INTO product(owner_id, title, description, category_id, exchange_for, add_date, exchanged, image_path)
-VALUES (5, 'elekronika', 'description examle 2', 1, 2, TO_DATE('2017/10/15', 'yyyy/mm/dd'), 0, '/images/product/2/2');
-INSERT INTO product(owner_id, title, description, category_id, exchange_for, add_date, exchanged, image_path)
-VALUES (2, 'elektronika 2', 'description examle 3', 2, 3, TO_DATE('2017/10/11', 'yyyy/mm/dd'), 0, '/images/product/3/3');
-INSERT INTO product(owner_id, title, description, category_id, exchange_for, add_date, exchanged, image_path)
-VALUES (3, 'dom i ogród', 'description examle 4', 2, 4, TO_DATE('2017/09/20', 'yyyy/mm/dd'), 0, '/images/product/4/4');
-INSERT INTO product(owner_id, title, description, category_id, exchange_for, add_date, exchanged, image_path)
-VALUES (5, 'motoryzacja', 'description examle 5', 7, 3, TO_DATE('2017/08/11', 'yyyy/mm/dd'), 0, '/images/product/5/5');
-INSERT INTO product(owner_id, title, description, category_id, exchange_for, add_date, exchanged, image_path)
-VALUES (4, 'komputery stacjonarne', 'description examle 6', 4, 2, TO_DATE('2017/07/11', 'yyyy/mm/dd'), 0, '/images/product/6/6');
-INSERT INTO product(owner_id, title, description, category_id, exchange_for, add_date, exchanged, image_path)
-VALUES (4, 'laptopy', 'description examle 7', 5, 7, TO_DATE('2017/06/01', 'yyyy/mm/dd'), 1, '/images/product/7/7');
-INSERT INTO product(owner_id, title, description, category_id, exchange_for, add_date, exchanged, image_path)
-VALUES (1, 'telefony', 'description examle 8', 6, 1, TO_DATE('2017/10/24', 'yyyy/mm/dd'), 0, '/images/product/8/8');
-INSERT INTO product(owner_id, title, description, category_id, exchange_for, add_date, exchanged, image_path)
-VALUES (1, 'motoryzacja 2', 'description examle 9', 7, 1, TO_DATE('2017/10/05', 'yyyy/mm/dd'), 0, '/images/product/9/9');
-INSERT INTO product(owner_id, title, description, category_id, exchange_for, add_date, exchanged, image_path)
-VALUES (4, 'stacjonarne 2', 'description examle 10', 4, 7, TO_DATE('2017/07/22', 'yyyy/mm/dd'), 0, '/images/product/10/10');
-INSERT INTO product(owner_id, title, description, category_id, exchange_for, add_date, exchanged, image_path)
-VALUES (3, 'motoryzacja 3', 'description examle 11', 7, 5, TO_DATE('2017/05/22', 'yyyy/mm/dd'), 1, '/images/product/11/11');
-INSERT INTO product(owner_id, title, description, category_id, exchange_for, add_date, exchanged, image_path)
-VALUES (2, 'stacjonarne 3', 'description examle 12', 4, 2, TO_DATE('2017/05/22', 'yyyy/mm/dd'), 0, '/images/product/12/12');
-
-INSERT INTO conversation(init_sender, init_receiver, product_id, sender_deleted, receiver_deleted) VALUES (1, 2, 1, 0, 0);
-INSERT INTO conversation(init_sender, init_receiver, product_id, sender_deleted, receiver_deleted) VALUES (4, 5, 2, 0, 0);
-INSERT INTO conversation(init_sender, init_receiver, product_id, sender_deleted, receiver_deleted) VALUES (5, 2, 3, 0, 0);
-INSERT INTO conversation(init_sender, init_receiver, product_id, sender_deleted, receiver_deleted) VALUES (2, 3, 4, 0, 0);
-INSERT INTO conversation(init_sender, init_receiver, product_id, sender_deleted, receiver_deleted) VALUES (4, 5, 5, 0, 0);
-INSERT INTO conversation(init_sender, init_receiver, product_id, sender_deleted, receiver_deleted) VALUES (3, 4, 6, 0, 0);
-INSERT INTO conversation(init_sender, init_receiver, product_id, sender_deleted, receiver_deleted) VALUES (2, 4, 6, 0, 0);
-
-INSERT INTO message(sender_id, receiver_id, msg_body, is_displayed, send_date, conversation)
-VALUES (1, 2, 'message text 1', 1, TO_DATE('2017/11/01 10:20:20', 'yyyy/mm/dd HH24:MI:SS'), 1);
-INSERT INTO message(sender_id, receiver_id, msg_body, is_displayed, send_date, conversation)
-VALUES (2, 1, 'message text 2', 1, TO_DATE('2017/11/01 11:33:21', 'yyyy/mm/dd HH24:MI:SS'), 1);
-INSERT INTO message(sender_id, receiver_id, msg_body, is_displayed, send_date, conversation)
-VALUES (1, 2, 'message text 3', 0, TO_DATE('2017/11/03 14:14:14', 'yyyy/mm/dd HH24:MI:SS'), 1);
-INSERT INTO message(sender_id, receiver_id, msg_body, is_displayed, send_date, conversation)
-VALUES (3, 5, 'message text 4', 1, TO_DATE('2017/10/17 18:59:43', 'yyyy/mm/dd HH24:MI:SS'), 2);
-INSERT INTO message(sender_id, receiver_id, msg_body, is_displayed, send_date, conversation)
-VALUES (4, 4, 'message text 5', 0, TO_DATE('2017/10/17 23:11:43', 'yyyy/mm/dd HH24:MI:SS'), 2);
-INSERT INTO message(sender_id, receiver_id, msg_body, is_displayed, send_date, conversation)
-VALUES (4, 2, 'message text 6', 0, TO_DATE('2017/10/15 10:11:59', 'yyyy/mm/dd HH24:MI:SS'), 3);
-INSERT INTO message(sender_id, receiver_id, msg_body, is_displayed, send_date, conversation)
-VALUES (2, 3, 'message text 7', 1, TO_DATE('2017/09/29 23:59:59', 'yyyy/mm/dd HH24:MI:SS'), 4);
-INSERT INTO message(sender_id, receiver_id, msg_body, is_displayed, send_date, conversation)
-VALUES (2, 3, 'message text 8', 1, TO_DATE('2017/10/01 09:09:11', 'yyyy/mm/dd HH24:MI:SS'), 4);
-INSERT INTO message(sender_id, receiver_id, msg_body, is_displayed, send_date, conversation)
-VALUES (4, 5, 'message text 9', 0, TO_DATE('2017/08/15 16:14:41', 'yyyy/mm/dd HH24:MI:SS'), 5);
-INSERT INTO message(sender_id, receiver_id, msg_body, is_displayed, send_date, conversation)
-VALUES (5, 4, 'message text 10', 0, TO_DATE('2017/08/16 17:23:32', 'yyyy/mm/dd HH24:MI:SS'), 5);
-INSERT INTO message(sender_id, receiver_id, msg_body, is_displayed, send_date, conversation)
-VALUES (3, 4, 'message text 11', 1, TO_DATE('2017/07/18 05:07:33', 'yyyy/mm/dd HH24:MI:SS'), 6);
-INSERT INTO message(sender_id, receiver_id, msg_body, is_displayed, send_date, conversation)
-VALUES (2, 4, 'message text 12', 0, TO_DATE('2017/08/16 09:43:54', 'yyyy/mm/dd HH24:MI:SS'), 7);
-
-INSERT INTO offer(offered_date, exchange_date, buyer_id, product_id, rate) VALUES (TO_DATE('2017/11/03 15:33:14', 'yyyy/mm/dd HH24:MI:SS'), NULL, 1, 1, -1);
-INSERT INTO offer(offered_date, exchange_date, buyer_id, product_id, rate) VALUES (TO_DATE('2017/10/18 08:19:11', 'yyyy/mm/dd HH24:MI:SS'), NULL, 4, 5, -1);
-INSERT INTO offer(offered_date, exchange_date, buyer_id, product_id, rate) VALUES (TO_DATE('2017/06/11 11:45:32', 'yyyy/mm/dd HH24:MI:SS'), TO_DATE('2017/06/22 13:42:12', 'yyyy/mm/dd HH24:MI:SS'), 3, 7, 7);
-INSERT INTO offer(offered_date, exchange_date, buyer_id, product_id, rate) VALUES (TO_DATE('2017/09/20 20:43:01', 'yyyy/mm/dd HH24:MI:SS'), NULL, 2, 4, -1);
-
-INSERT INTO offered_products_list VALUES (1, 8);
-INSERT INTO offered_products_list VALUES (1, 9);
-INSERT INTO offered_products_list VALUES (2, 10);
-INSERT INTO offered_products_list VALUES (3, 11);
-INSERT INTO offered_products_list VALUES (4, 12);
-
-/
 -- po zaladowaniu danych testowych dodaj triggery z automatycznym ustawianiem dat
 CREATE OR REPLACE TRIGGER product_insert_trigger
   BEFORE INSERT ON product FOR EACH ROW
@@ -293,12 +217,13 @@ CREATE OR REPLACE TRIGGER offer_insert_trigger
     :new.offered_date := current_date;
   END;
 /
+
 --propozycja perspektywy - podsumowanie konwersacji, które można wykorzystać przy wyświetlaniu aktualnych rozmów
 create or replace view conversation_heading as
-  select c.id, p.title, p.image_path, p.id as product_id, u.id as sender, u2.id as receiver, m.msg_body, m.send_date, c.sender_deleted, c.receiver_deleted, m.is_displayed
-  from product p, conversation c, users u, users u2, message m
-  where p.id = c.product_id and m.conversation = c.id and u.id = m.sender_id and u2.id = m.receiver_id
-        and m.send_date = (
+  select c.id, p.title, p.image_path, p.id as product_id, sender_id as sender, m.receiver_id as receiver, m.msg_body, m.send_date,
+    c.sender_deleted, c.receiver_deleted, m.is_displayed
+  from product p, conversation c, message m
+  where p.id = c.product_id and m.conversation = c.id and m.send_date = (
     select max(send_date) from message m2 where m2.conversation = c.id
   );
 
@@ -309,6 +234,7 @@ create or replace TRIGGER conv_h_update_trigger INSTEAD OF UPDATE on conversatio
   END;
 /
 
+select * from conversation_heading;
 -- insert
 create or replace TRIGGER con_h_insert_trigger INSTEAD OF INSERT on conversation_heading
   DECLARE
@@ -319,3 +245,4 @@ create or replace TRIGGER con_h_insert_trigger INSTEAD OF INSERT on conversation
   END;
 
 /
+commit;

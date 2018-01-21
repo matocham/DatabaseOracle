@@ -1,0 +1,46 @@
+Wstęp:
+
+Portal obsługujący wymaine przedmiotami między użytkownikami.
+Użytkownik składający oferte definiuje kategorie za jakiego typu przedmioty chce się wymienić,
+a następnie inni użytkownicy mogą przeprowadzać konwersacje co do oferty
+i składać oferty wymiany co do oferty zadeklarowanej przez ofertowicza.
+
+
+Baza danych zawiera tabele:
+- użytkowników,
+- ofert użytkowników,
+- zaproponowanych produktów przez innych użytkowinków do oferty,
+- kategori (przechowuje jakiej nazwy kategori do której należy dany produkt),
+- konwersacji,
+- wiadomości
+
+Założenia:
+1. Użytkownik może przeprowadzić tylko jedną konwersacje do dannej oferty.
+2. Unikalność użytkowników (login).
+3. Hash-owanie haseł użytkowników.
+4. Konwersacja może zawierać wiele wiadomości.
+5. Użytkownik może posiadać wiele produktów.
+6. Uzytkownik może tworzyć wiele ofert. Oferta zawiera jeden przedmiot.
+7. Inni użytkoniwcy mogą oferować jeden produkt, ale mogą składać wiele ofert produktu do interesującej oferty.
+8. Użytkownik definiuje z jakiej kategori chce dokonać wymiany.
+
+Opis wykonania projektu:
+
+Projekt został wykoany przy pomocy framework Spring date (Java) testowany pod bazą oracla 11g.
+
+Zaimplementowano następujące wyzwalcze:
+- Wyzwalacze do podonoszenia sekwencji
+- Wyzwalacz do hash-owania haseł użytkownika
+
+Stworzono następujące widoki:
+- widok
+- widok umożliwiający wyświetlenie ofert danego użytkownika
+- widok umożliwiajćy wyświetleni offerowanych produktów co do danej oferty użytkownika
+
+Zaimplementowano następujące wyzwalcze co do widoków:
+- Wyzwalacz typu insert i upadate
+
+Zaimplementowano następujące funkcje i procedury w paczce o nazwie "utilities":
+- procedura finalizująca wymiane
+- procedura usuwająca konwersacje
+- funkcja has-ująca hasła użytkowników

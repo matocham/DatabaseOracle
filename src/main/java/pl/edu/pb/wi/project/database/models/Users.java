@@ -13,8 +13,10 @@ public class Users implements Serializable{
     }
 
     @Id
-    @SequenceGenerator(name="users_seq", sequenceName="users_seq")
-    @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="users_seq")
+//    @SequenceGenerator(name="users_seq", sequenceName="users_seq")
+//    @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="users_seq")
+    @GeneratedValue(generator = "increment")
+    @GenericGenerator(name = "increment", strategy = "increment")
     Long id;
 
     @Column(name = "NAME")

@@ -209,3 +209,8 @@
 #loggeedAs {
     color: white;
 }
+
+.maxImgSizeOffered{
+    max-width: 200px;
+    max-height: 150px;
+}

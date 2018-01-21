@@ -1,16 +1,28 @@
 package pl.edu.pb.wi.project.database.models;
 
+import org.hibernate.annotations.GenericGenerator;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 @Entity
 @Table(name = "OFFER")
+@NamedStoredProcedureQueries({
+        @NamedStoredProcedureQuery(name = "finalize_exchange",
+                procedureName = "utilities.finalize_exchange",
+                parameters = {
+                        @StoredProcedureParameter(mode = ParameterMode.IN, name = "offer_id", type = Long.class)
+                })
+})
 public class Offer implements Serializable {
 
     @JoinColumn(name = "ID")
     @Id
+    @GeneratedValue(generator = "increment")
+    @GenericGenerator(name = "increment", strategy = "increment")
     Long id;
 
     @Column(name = "OFFERED_DATE")
@@ -23,9 +35,13 @@ public class Offer implements Serializable {
     @JoinColumn(name = "BUYER_ID", referencedColumnName = "ID")
     Users buyer;
 
-    @OneToMany(cascade = CascadeType.ALL, targetEntity = Product.class)
+    @ManyToOne(targetEntity = Product.class)
     @JoinColumn(name = "PRODUCT_ID")
-    Set<Product> productId;
+    Product product;
+
+    @ManyToMany
+    @JoinTable(name = "OFFERED_PRODUCTS_LIST", joinColumns = @JoinColumn(name = "OFFER_ID", referencedColumnName = "ID"), inverseJoinColumns = @JoinColumn(name = "PRODUCT_ID", referencedColumnName = "ID"))
+    List<Product> offeredProducts;
 
     @Column(name = "RATE")
     Integer rate;
@@ -62,12 +78,12 @@ public class Offer implements Serializable {
         this.buyer = buyer;
     }
 
-    public Set<Product> getProductId() {
-        return productId;
+    public Product getProduct() {
+        return product;
     }
 
-    public void setProductId(Set<Product> productId) {
-        this.productId = productId;
+    public void setProduct(Product product) {
+        this.product = product;
     }
 
     public Integer getRate() {
@@ -78,4 +94,11 @@ public class Offer implements Serializable {
         this.rate = rate;
     }
 
+    public List<Product> getOfferedProducts() {
+        return offeredProducts;
+    }
+
+    public void setOfferedProducts(List<Product> offeredProducts) {
+        this.offeredProducts = offeredProducts;
+    }
 }

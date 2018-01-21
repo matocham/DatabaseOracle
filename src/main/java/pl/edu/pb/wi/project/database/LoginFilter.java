@@ -24,7 +24,7 @@ public class LoginFilter implements Filter {
         HttpSession currentSession = trueRequest.getSession(false);
         String requestPath = trueRequest.getServletPath();
 
-        if(requestPath.startsWith("/css/") || requestPath.startsWith("/js/") || requestPath.startsWith("/image/") || requestPath.startsWith("/webjars/")){
+        if(requestPath.startsWith("/css/") || requestPath.startsWith("/js/") || requestPath.startsWith("/images/") || requestPath.startsWith("/webjars/") || requestPath.startsWith("/external/")){
             chain.doFilter(request, response);
             return;
         }
@@ -59,6 +59,7 @@ public class LoginFilter implements Filter {
         allowedPaths.add("/login");
         allowedPaths.add("/register");
         allowedPaths.add("/newOffer");
+        allowedPaths.add("/offered");
         for (String authPath : allowedPaths) {
             if (path.contains(authPath)) {
                 return true;
