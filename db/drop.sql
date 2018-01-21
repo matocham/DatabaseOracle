@@ -25,3 +25,5 @@ DROP TABLE users;
 DROP PACKAGE utilities;
 
 drop view conversation_heading;
+drop view myOffers;
+drop view offeredMe;
