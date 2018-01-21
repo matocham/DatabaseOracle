@@ -43,6 +43,25 @@ CREATE OR REPLACE VIEW offeredMe AS
   WHERE mo.id = opl.offer_id
         AND opl.product_id = p.ID;
 
-
+-- Widok po optymalizacją
+CREATE OR REPLACE VIEW offeredMe AS
+  SELECT
+    --Za tą oferte
+    rownum AS ID,
+    mo.owner_login AS OWNER_LOGIN, mo.PRODUCT_ID,
+    mo.ID as OFFER_ID , mo.TITLE AS PRODUCT_TITLE, mo.NAME AS PRODUCT_NAME, mo.IMAGE_PATH AS PRODUCT_IMAGE,
+    --zaoferowali.
+    u.login AS FOR_LOGIN, --(SELECT u.login FROM Users u WHERE u.id = p.OWNER_ID)
+    p.ID AS FOR_PRODUCT_ID, p.OWNER_ID as FOR_OWNER_ID
+    , p.TITLE AS FOR_TITLE, p.DESCRIPTION as FOR_DESCRIPTION,
+    c1.name AS FOR_NAME, --(SELECT c.name FROM CATEGORY c WHERE c.id = p.CATEGORY_ID)
+    c2.name AS for_exchange_for, --(SELECT c.name FROM category c WHERE p.exchange_For = c.id )
+    p.EXCHANGED as FOR_EXCHANGED, p.IMAGE_PATH as FOR_IMAGE_PATH
+  FROM myOffers mo, offered_products_list opl ,product p, category c1, category c2, Users u
+  WHERE mo.id = opl.offer_id
+        AND opl.product_id = p.ID
+        AND c1.id = p.Category_ID
+        AND c2.id = p.exchange_For
+        AND u.id = p.owner_id;
 
 commit;
