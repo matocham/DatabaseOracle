@@ -33,8 +33,7 @@
                             </div>
                             <div class='h6 addedDate' th:inline="text"><b>Dodano</b>&nbsp;[[${#dates.format(product.addDate, 'dd-MM-yyyy')}]]</div>
                             <div th:if="${session != null and session.userId != null and product.owner.id != session.userId}">
-                                <a class="btn btn-default btn-success" th:href="@{/addOffer(id=${product.id})}">Złóż
-                                    ofertę</a>
+                                <a class="btn btn-default btn-success" th:href="@{/addOffer/{id}(id=${product.id})}">Złóż ofertę</a>
                                 <a class="btn btn-default btn-warning" th:href="@{/conversation(id=${product.id})}">Zadaj
                                     pytanie</a>
                             </div>

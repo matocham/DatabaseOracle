@@ -43,7 +43,7 @@ public class OfferController {
     @GetMapping("/addOffer/{prodId}")
     String addOffer(Model model, @PathVariable("prodId") Long productId, HttpSession session) {
         Product wantedProduct = productRepository.findOne(productId);
-        if (wantedProduct == null) {
+        if (wantedProduct == null || !offerRepository.findByBuyerIdAndProductId((Long) session.getAttribute(LoginController.USER_ID_SESSION), wantedProduct.getId()).isEmpty()) {
             return "redirect:/";
         }
         Iterable<Product> myProducts = productRepository.findByCategoryTreeAndOwner(wantedProduct.getExchangeFor().getId(), (Long) session.getAttribute(LoginController.USER_ID_SESSION));
