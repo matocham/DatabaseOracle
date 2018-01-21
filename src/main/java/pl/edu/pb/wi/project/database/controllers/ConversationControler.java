@@ -52,7 +52,7 @@ public class ConversationControler {
         ConversationView conversationView=new ConversationView();
         Long sender=Long.parseLong(session.getAttribute(USER_ID_SESSION).toString());
         Users user1= usersRepository.findById(sender);
-
+        conversationViewRes=conversationViewRepository.findConversationViewByParameters(product,user1);
         conversationView.setSenderId(user1);
         conversationView.setMsgBody(description);
         conversationView.setDisplayed(false);
